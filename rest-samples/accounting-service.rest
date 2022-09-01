@@ -1,0 +1,42 @@
+@accounting-service = 127.0.0.1:5700
+
+
+###### ORDER METRICS
+### Order metrics per store
+GET http://{{accounting-service}}/OrderMetrics?StoreId=Redmond
+
+### Order metrics total 
+GET http://{{accounting-service}}/OrderMetrics
+
+
+###### ORDERS OVER TIME
+### Order counts over the last 20 minutes
+GET http://{{accounting-service}}/Orders/Minute/PT20M?StoreId=Redmond
+
+### Order counts over the last 24 hours, by hour
+GET http://{{accounting-service}}/Orders/Hour/PT24H?StoreId=Redmond
+
+### Orders by Day
+GET http://{{accounting-service}}/Orders/Day/P14D?StoreId=Redmond
+
+
+###### CORP STORE LISTING
+### Corporate Store List
+GET http://{{accounting-service}}/Corp/Stores
+
+
+###### CORP SALES PROFIT
+### Corp SalesProfit Per Store
+GET http://{{accounting-service}}/Corp/SalesProfit/PerStore
+
+### Corp SalesProfit All Stores
+GET http://{{accounting-service}}/Corp/SalesProfit/Total
+
+
+### Readiness probe
+GET http://{{accounting-service}}/Probes/ready
+
+
+###
+GET http://corp.accounting.brianredmond.io/Corp/SalesProfit/PerStore
+

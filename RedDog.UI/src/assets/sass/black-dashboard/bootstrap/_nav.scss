@@ -1,0 +1,169 @@
+// Base class
+//
+// Kickstart any navigation component with a set of style resets. Works with
+// `<nav>`s or `<ul>`s.
+
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  padding-left: 0;
+  margin-bottom: 0;
+  list-style: none;
+}
+
+.nav-link {
+  display: block;
+  padding: $nav-link-padding-y $nav-link-padding-x;
+
+  @include hover-focus {
+    text-decoration: none;
+  }
+
+  // Disabled state lightens text
+  &.disabled {
+    color: $nav-link-disabled-color;
+  }
+}
+.nav-link-white {
+  padding-left:20px ;
+  padding-right:20px ;
+  color:#fff;
+  text-transform: uppercase;;
+  @include hover-focus {
+    text-decoration: none;
+  }
+
+  // Disabled state lightens text
+  &.disabled {
+    color: $nav-link-disabled-color;
+  }
+}
+.nav-link-white img{
+  opacity: .25;
+}
+
+.nav-pop-out{
+  position: absolute;
+  right: -20px;
+  bottom: 20px;
+  padding-left: 6px;
+  padding-top: 12px;
+  padding-right: 16px;
+  padding-bottom: 12px;
+  // border-top:1px solid rgba(255, 255, 255, 0.25);
+  // border-bottom:1px solid rgba(255, 255, 255, 0.25);
+  // border-left:1px solid rgba(255, 255, 255, 0.25);
+  // border-top-left-radius: 18px;
+  // border-bottom-left-radius: 18px;
+}
+
+.nav-pop-out:hover{
+  // border-top:1px solid rgba(255, 255, 255, 0.75);
+  // border-bottom:1px solid rgba(255, 255, 255, 0.75);
+  // border-left:1px solid rgba(255, 255, 255, 0.75);
+  padding-left: 20px;
+  padding-top: 25px;
+  padding-right: 25px;
+  padding-bottom: 25px;
+}
+
+.nav-pop-out:hover > a > img{
+  opacity: 1;
+}
+
+
+.footer-nav{
+  padding-right: 240px;
+}
+
+//
+// Tabs
+//
+
+.nav-tabs {
+  border-bottom: $nav-tabs-border-width solid $nav-tabs-border-color;
+
+  .nav-item {
+    margin-bottom: -$nav-tabs-border-width;
+  }
+
+  .nav-link {
+    border: $nav-tabs-border-width solid transparent;
+    @include border-top-radius($nav-tabs-border-radius);
+
+    @include hover-focus {
+      border-color: $nav-tabs-link-hover-border-color;
+    }
+
+    &.disabled {
+      color: $nav-link-disabled-color;
+      background-color: transparent;
+      border-color: transparent;
+    }
+  }
+
+  .nav-link.active,.nav-link-white.active
+  .nav-item.show .nav-link {
+    color: $nav-tabs-link-active-color;
+    background-color: $nav-tabs-link-active-bg;
+    border-color: $nav-tabs-link-active-border-color;
+  }
+
+  .dropdown-menu {
+    // Make dropdown border overlap tab border
+    margin-top: -$nav-tabs-border-width;
+    // Remove the top rounded corners here since there is a hard edge above the menu
+    @include border-top-radius(0);
+  }
+}
+
+
+//
+// Pills
+//
+
+.nav-pills {
+  .nav-link {
+    @include border-radius($nav-pills-border-radius);
+  }
+
+  .nav-link.active,
+  .show > .nav-link {
+    color: $nav-pills-link-active-color;
+    background-color: $nav-pills-link-active-bg;
+  }
+}
+
+
+//
+// Justified variants
+//
+
+.nav-fill {
+  .nav-item {
+    flex: 1 1 auto;
+    text-align: center;
+  }
+}
+
+.nav-justified {
+  .nav-item {
+    flex-basis: 0;
+    flex-grow: 1;
+    text-align: center;
+  }
+}
+
+
+// Tabbable tabs
+//
+// Hide tabbable panes to start, show them when `.active`
+
+.tab-content {
+  > .tab-pane {
+    display: none;
+  }
+  > .active {
+    display: block;
+  }
+}

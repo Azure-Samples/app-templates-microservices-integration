@@ -1,0 +1,461 @@
+.card {
+  background: #070207b1;
+  border: 0;
+  position: relative;
+  width: 100%;
+  // min-width: 22vw;
+  margin-bottom: 20px;
+
+  label {
+    color: rgba($white, 0.6);
+  }
+
+  .big-card {
+    padding-right: 128px;
+  }
+  .card-title {
+    margin-bottom: 0.75rem;
+  }
+
+  .card-body {
+    line-height: 1!important;
+
+    &.table-full-width {
+      padding-left: 0;
+      padding-right: 0;
+    }
+
+    .card-title {
+      color: $white;
+      text-transform: inherit;
+      font-weight: $font-weight-light;
+      margin-bottom: 0.75rem;
+    }
+
+    .card-description,
+    .card-category {
+      color: rgba($white, 0.6);
+    }
+
+    .card-big-category {
+      font-size: 36px;
+      text-transform: uppercase;
+      font-weight: 300;
+      margin-top: -40px !important;
+      padding-top: -20px !important;
+    }
+  }
+
+  .card-header {
+    &:not([data-background-color]) {
+      background-color: transparent;
+    }
+    padding: 15px 15px 0;
+    border: 0;
+    color: rgba($white, 0.8);
+
+    .card-title {
+      color: $white;
+      font-weight: 100;
+    }
+
+    .card-category {
+      color: $dark-gray;
+      margin-bottom: 5px;
+      font-weight: 300;
+    }
+  }
+
+  .map {
+    border-radius: $border-radius-sm;
+
+    &.map-big {
+      height: 420px;
+    }
+  }
+
+  &.card-white {
+    background: $white;
+
+    .card-title {
+      color: $black;
+    }
+    .card-category,
+    .stats {
+      color: $card-stats-gray;
+    }
+
+    //style for inputs
+
+    @include form-control-placeholder(rgba($black, 0.4), 1);
+    .has-danger {
+      .form-control,
+      .input-group-prepend .input-group-text {
+        border-color: $danger-states;
+      }
+    }
+
+    .input-group-prepend .input-group-text {
+      border-color: rgba($black-states, 0.2);
+      color: $black-states;
+    }
+
+    .form-control {
+      color: $black;
+      border-color: rgba($black-states, 0.2);
+      &:focus {
+        border-color: $primary;
+      }
+    }
+    label:not(.btn) {
+      color: $default;
+    }
+
+    .form-group.no-border,
+    .input-group.no-border {
+      .form-control,
+      .form-control + .input-group-prepend .input-group-text,
+      .form-control + .input-group-append .input-group-text,
+      .input-group-prepend .input-group-text,
+      .input-group-append .input-group-text {
+        background-color: $opacity-gray-3;
+        &:focus,
+        &:active,
+        &:active {
+          background-color: $opacity-gray-5;
+        }
+      }
+
+      .form-control {
+        &:focus {
+          & + .input-group-prepend .input-group-text,
+          & + .input-group-append .input-group-text {
+            background-color: $transparent-bg;
+          }
+        }
+      }
+    }
+
+    .input-group[disabled] {
+      .input-group-prepend .input-group-text,
+      .input-group-append .input-group-text {
+        background-color: $black;
+      }
+    }
+
+    .form-control[disabled],
+    .form-control[readonly],
+    fieldset[disabled] .form-control {
+      background: $light-gray;
+      border-color: rgba($black-states, 0.3);
+    }
+
+    .input-group-focus {
+      .input-group-prepend .input-group-text,
+      .input-group-append .input-group-text,
+      .form-control {
+        background-color: $white;
+        border-color: $primary;
+      }
+
+      &.no-border {
+        .input-group-prepend .input-group-text,
+        .input-group-append .input-group-text {
+          background-color: $opacity-gray-5;
+        }
+      }
+    }
+    .input-group-prepend .input-group-text {
+      border-right: none;
+    }
+
+    .input-group-append .input-group-text {
+      border-left: none;
+    }
+
+    .has-danger .form-control:focus,
+    .has-success.input-group-focus .input-group-append .input-group-text,
+    .has-success.input-group-focus .input-group-prepend .input-group-text {
+      border-color: $danger-states;
+    }
+
+    .has-success .form-control:focus,
+    .has-success.input-group-focus .input-group-append .input-group-text,
+    .has-success.input-group-focus .input-group-prepend .input-group-text {
+      border-color: darken($success, 10%);
+    }
+  }
+
+  &.card-plain {
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .image {
+    overflow: hidden;
+    height: 200px;
+    position: relative;
+  }
+
+  .avatar {
+    width: 30px;
+    height: 30px;
+    overflow: hidden;
+    border-radius: 50%;
+    margin-bottom: 15px;
+  }
+
+  label {
+    font-size: $font-size-sm;
+    margin-bottom: 5px;
+  }
+
+  .card-footer {
+    background-color: transparent;
+    border: 0;
+    padding: 15px;
+
+    .stats {
+      i {
+        margin-right: 5px;
+        position: relative;
+      }
+    }
+
+    h6 {
+      margin-bottom: 0;
+      padding: 7px 0;
+    }
+  }
+}
+
+
+
+.card-trans-branch {
+  border-radius: 8px;
+  background: #101b34;
+}
+.card-trans-branch > .card-header-title {
+  color:#648fbd;
+  font-weight: 400;
+}
+
+
+
+.card-trans-corp {
+  border-radius: 8px;
+  background: #0C0C0C;
+}
+.card-trans-corp > .card-header-title {
+  color:#656565;
+  font-weight: 400;
+}
+
+.card-big-category {
+  text-transform: uppercase;
+  font-size: 18px;
+  font-weight: 300;
+  padding-left: 8px;
+}
+
+.card-big-detail {
+  // min-width: 256px !important;
+  max-height: 15vh;
+  position: relative;
+  z-index: 4;
+  margin-top: -4px;
+  margin-bottom: -16px;
+  font-size: clamp(36px, 64px, 108px);
+  color: #DAE2DF; // GAINSBORO
+  font-weight: 300;
+  font-family: "Exo", sans-serif;
+  padding-bottom: 2vh;
+  padding-top: 1.5vh;
+  perspective: 180px;
+  perspective-origin: 55% 50%;
+}
+// .card-big-detail::after {
+//   -webkit-filter: blur(8px);
+//   filter: blur(8px);
+//   content: '128';
+//   color: #AAA;
+//   position: absolute;
+//   top: 0;
+//   right: 0;
+//   bottom: 0;
+//   left: 0;
+//   -webkit-transform: scaleY(0.5) rotateX(0deg);
+//   transform: scaleY(0.5) rotateX(0deg);
+//   -webkit-transform-origin: 10% 90%;
+//   transform-origin: 20% 80%;
+//   opacity: 0.5;
+// }
+
+.card-big-detail-med {
+  // min-width: 228px !important;
+  position: relative;
+  z-index: 4;
+  margin-top: -4px;
+  margin-bottom: -16px;
+  font-size: 6vw !important;
+  color: white;
+  font-weight: 500;
+  font-family: "Exo", sans-serif;
+  /* -webkit-text-stroke-color: #45584d; */
+  /* -webkit-text-stroke-width: 2px; */
+  padding-bottom: 5vh;
+  padding-top: 4vh;
+}
+
+.card-big-detail-med::after {
+  -webkit-filter: blur(8px);
+  filter: blur(8px);
+  content: '128';
+  color: #AAA;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  -webkit-transform: scaleY(0.5) rotateX(0deg);
+  transform: scaleY(0.5) rotateX(0deg);
+  -webkit-transform-origin: 20% 80%;
+  transform-origin: 20% 80%;
+  opacity: 0.5;
+}
+
+.card-big-title {
+  position: relative;
+  z-index: 4;
+  text-align: center;
+  font-size: 128px;
+  font-weight: 500;
+  color: #DAE2DF; // GAINSBORO
+}
+.card-header-title{
+  margin-left: 8px;
+  margin-top: 12px;
+  padding-left: 10px;
+  padding-top: 4px;
+  color: #4a5c8c; 
+  font-size: clamp(12px, 18px, 24px);
+  margin-bottom: 4px;
+  font-weight: 300;
+  font-family: "Exo", sans-serif;
+}
+.card-header-title i{
+  font-size: clamp(10px, 16px, 20px);
+  padding-bottom: 6px;
+  padding-right: 6px !important;
+}
+.card-header-title > small{
+  padding-left: 3px;
+  font-size: clamp(10px, 12px, 14px);
+  color: #989898;
+  font-family: "Exo", sans-serif;
+  font-weight: 500;
+}
+.card-header-subtitle{
+  font-size: 11px;
+  padding-left: 8px !important;
+  font-family: "Quicksand", sans-serif;
+  font-weight: 500;
+  // letter-spacing: 1px;
+  color:rgb(223, 87, 194);
+
+}
+
+.card-header-dark {
+  background-color: #1b1515 !important;
+  // margin-bottom: 12px !important;
+  padding-bottom: 12px !important;
+}
+
+.card-header-light {
+  padding-right: 2px !important;
+  margin-bottom: -2px;
+  // padding: 4px 6px 4px 6px !important;
+  background-color: transparent !important;
+}
+
+.card-header-detail-info {
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #888484 !important;
+}
+.card-header-detail-data {
+  font-size: 11px;
+}
+.card-detail-info {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #888484 !important;
+}
+
+.card-detail-light {
+  position: relative;
+  top: -8px;
+  left: -4px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.card-footer-dark {
+  background-color: #29171575 !important;
+  margin-top: 0px !important;
+  padding: 0px !important;
+  margin-bottom: 0px !important;
+}
+
+.card-footer-title {
+  position: relative;
+  padding-right: 6px;
+  padding-left: 22px;
+  padding-bottom: 12px;
+  font-size: 10px;
+  font-weight: 700;
+  color: rgba(255, 115, 220, 0.578);
+  font-family: "Exo", sans-serif;
+  text-transform: uppercase;
+}
+
+.card-footer-title i {
+  padding-left: 4px;
+  padding-right: 4px;
+  font-size: 14px;
+  font-weight: 700;
+  color: rgb(108, 108, 108);
+}
+.card-footer-title i.active {
+  padding-left: 4px;
+  padding-right: 4px;
+  font-size: 14px;
+  font-weight: 700;
+  color: rgb(108, 242, 119);
+}
+
+.chart-doughnut-canvas {
+  position: relative;
+  margin: auto;
+}
+
+.chart-doughnut-canvas canvas{
+  height:clamp(128px, 6.83vw, 190px);
+  width: 9vw;
+}
+
+.card-body {
+  padding: $card-spacer-y;
+}
+
+@include media-breakpoint-down(sm) {
+  .card.card-chart .card-header {
+    .btn-group-toggle .tim-icons {
+      font-size: 0.875rem;
+      top: -1px;
+    }
+  }
+}
