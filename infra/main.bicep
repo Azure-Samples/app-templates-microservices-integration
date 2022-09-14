@@ -14,7 +14,13 @@ param blobContainerName string = 'receipts'
 param sqlServerName string = 'sql-${uniqueSuffix}'
 param sqlDatabaseName string = 'reddog'
 param sqlAdminLogin string = 'reddog'
+@secure()
 param sqlAdminLoginPassword string = take(newGuid(), 16)
+param appServicePlanName string = 'asp-${uniqueSuffix}'
+param registryName string = 'acr${replace(uniqueSuffix, '-', '')}'
+param uiServiceName string = 'ui-${uniqueSuffix}'
+param orderServiceName string = 'order-${uniqueSuffix}'
+param virtualCustomerName string = 'vc-${uniqueSuffix}'
 
 module apimModule 'modules/apim.bicep' = {
   name: '${deployment().name}--apim'
@@ -83,7 +89,7 @@ module appServicePlan 'modules/asp.bicep' = {
   name: '${deployment().name}--app-service-plan'
   params: {
     location: location
-    appServicePlanName: 'ui-${uniqueSuffix}'
+    appServicePlanName: appServicePlanName
   }
 }
 
@@ -147,21 +153,26 @@ module daprStateMakeline 'modules/daprComponents/makeline.bicep' = {
   }
 }
 
+module registryModule 'modules/acr.bicep' = {
+  name: '${deployment().name}--docker-registry'
+  params: {
+    registryName: registryName
+    location: location
+  }
+}
+
 module orderServiceModule 'modules/appservice.bicep' = {
   name: '${deployment().name}--order-service'
   dependsOn: [
     appServicePlan
-    apimModule
-    containerAppsEnvModule
-    serviceBusModule
-    daprPubsub
   ]
   params: {
-    webAppName: 'orderservice-${uniqueSuffix}'
+    webAppName: orderServiceName
     location: location
     serverFarmId: appServicePlan.outputs.id
-    dockerRegistryUsername: ''
-    dockerRegistryPassword: ''
+    dockerRegistryUrl: registryModule.outputs.loginServer
+    dockerRegistryUsername: registryModule.outputs.username
+    dockerRegistryPassword: registryModule.outputs.password
   }
 }
 
@@ -273,22 +284,12 @@ module virtualCustomerModule 'modules/functions.bicep' = {
   ]
   params: {
     location: location
-    functionName: 'virtual-customer'
+    functionName: virtualCustomerName
     serverFarmId: appServicePlan.outputs.id
-    dockerRegistryUsername: dockerRegistry.outputs.username
-    dockerRegistryPassword: dockerRegistry.outputs.password
+    dockerRegistryUrl: registryModule.outputs.loginServer
+    dockerRegistryUsername: registryModule.outputs.username
+    dockerRegistryPassword: registryModule.outputs.password
     storageAccountAddress: storageModule.outputs.address
-  }
-}
-
-module traefikModule 'modules/containerApps/traefik.bicep' = {
-  name: '${deployment().name}--traefik'
-  dependsOn: [
-    containerAppsEnvModule
-  ]
-  params: {
-    location: location
-    containerAppsEnvName: containerAppsEnvName
   }
 }
 
@@ -296,16 +297,14 @@ module uiModule 'modules/appservice.bicep' = {
   name: '${deployment().name}--ui'
   dependsOn: [
     appServicePlan
-    containerAppsEnvModule
-    makeLineServiceModule
-    accountingServiceModule
   ]
   params: {
-    webAppName: 'ui-${uniqueSuffix}'
+    webAppName: uiServiceName
     location: location
     serverFarmId: appServicePlan.outputs.id
-    dockerRegistryUsername: ''
-    dockerRegistryPassword: ''
+    dockerRegistryUrl: registryModule.outputs.loginServer
+    dockerRegistryUsername: registryModule.outputs.username
+    dockerRegistryPassword: registryModule.outputs.password
   }
 }
 

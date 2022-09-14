@@ -20,3 +20,5 @@ resource blobContainer 'Microsoft.Storage/storageAccounts/blobServices/container
   parent: blobService
   name: blobContainerName
 }
+
+output address string = 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};AccountKey=${listKeys(storageAccount.id, storageAccount.apiVersion).keys[0].value};EndpointSuffix=core.windows.net'
