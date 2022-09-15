@@ -13,6 +13,10 @@ COPY library-scripts/azcli-debian.sh /tmp/library-scripts/
 RUN if [ "$INSTALL_AZURE_CLI" = "true" ]; then bash /tmp/library-scripts/azcli-debian.sh; fi \
     && apt-get clean -y && rm -rf /var/lib/apt/lists/* /tmp/library-scripts
 
+# [Option] Install Azure Developer CLI
+ARG INSTALL_AZD_CLI="false"
+RUN if [ "$INSTALL_AZD_CLI" = "true" ]; then curl -fsSL https://aka.ms/install-azd.sh | bash ; fi
+
 # [Option] Enable non-root Docker access in container
 ARG ENABLE_NONROOT_DOCKER="true"
 # [Option] Use the OSS Moby CLI instead of the licensed Docker CLI

@@ -83,3 +83,5 @@ resource appServiceAppSettings 'Microsoft.Web/sites/config@2020-06-01' = {
     }
   }
 }
+
+output defaultHostName string = appService.properties.defaultHostName

@@ -6,6 +6,8 @@ services:
       dockerfile: Dockerfile
       args:
         variant: 3.1
+        INSTALL_AZURE_CLI: "true"
+        INSTALL_AZD_CLI: "true"
 
     environment:
       #ASPNETCORE_Kestrel__Endpoints__Http__Url: http://*:5000

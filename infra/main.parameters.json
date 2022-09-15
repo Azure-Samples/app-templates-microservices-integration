@@ -2,6 +2,9 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
+    "name":{
+      "value": "reddog-template"
+    },
     "uniqueSeed": {
       "value": "5dfec952-ce67-4b81-a3ff-d64d964f2df3-reddog-app-template"
     },
@@ -64,6 +67,9 @@
     },
     "virtualCustomerName": {
       "value": "vc-reddog-d64f964"
+    },
+    "apimName": {
+      "value": "apim-reddog-d64f964"
     }
   }
 }
