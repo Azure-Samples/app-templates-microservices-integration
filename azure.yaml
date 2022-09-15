@@ -1,0 +1,71 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
+
+name: app-templates-eshop-on-paas
+infra:
+    provider: "bicep"
+    path: "infra"
+    module: "main"
+services:
+    order: 
+        resourceName: "app-order-reddog-d64f964"
+        project: "./RedDog.OrderService"
+        host: "appservice"
+        language: "dotnet"
+    ui:
+        resourceName: "app-ui-reddog-d64f964"
+        project: "./RedDog.UI"
+        host: "appservice"
+        language: "js"
+    virtualCustomer:
+        resourceName: "app-vc-reddog-d64f964"
+        project: "./RedDog.VirtualCustomers"
+        host: "function"
+        language: "dotnet"
+    accounting:
+        resourceName: "accounting-service"
+        project: "./RedDog.AccountingService"
+        host: "containerapp"
+        module: "./modules/containerApps/accounting.bicep"
+        docker:
+            path: "./Dockerfile"
+            context: "../"
+    bootstrapper:
+        resourceName: "bootstrapper"
+        project: "./RedDog.Bootstrapper"
+        host: "containerapp"
+        module: "./modules/containerApps/bootstrapper.bicep"
+        docker:
+            path: "./Dockerfile"
+            context: "../"
+    loyalty:
+        resourceName: "loyalty-service"
+        project: "./RedDog.LoyaltyService"
+        host: "containerapp"
+        module: "./modules/containerApps/loyalty.bicep"
+        docker:
+            path: "./Dockerfile"
+            context: "../"
+    makeline:
+        resourceName: "makeline-service"
+        project: "./RedDog.MakeLineService"
+        host: "containerapp"
+        module: "./modules/containerApps/makeline.bicep"
+        docker:
+            path: "./Dockerfile"
+            context: "../"
+    receipt:
+        resourceName: "receipt-generation-service"
+        project: "./RedDog.ReceiptGenerationService"
+        host: "containerapp"
+        module: "./modules/containerApps/receipt.bicep"
+        docker:
+            path: "./Dockerfile"
+            context: "../"
+    virtualWorker:
+        resourceName: "virtual-worker"
+        project: "./RedDog.VirtualWorker"
+        host: "containerapp"
+        module: "./modules/containerApps/virtualworker.bicep"
+        docker:
+            path: "./Dockerfile"
+            context: "../"

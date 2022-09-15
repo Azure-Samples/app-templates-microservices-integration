@@ -3,7 +3,10 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "name":{
-      "value": "reddog-template"
+      "value": "${AZURE_ENV_NAME}"
+    },
+    "location":{
+      "value": "${AZURE_LOCATION}"
     },
     "uniqueSeed": {
       "value": "5dfec952-ce67-4b81-a3ff-d64d964f2df3-reddog-app-template"

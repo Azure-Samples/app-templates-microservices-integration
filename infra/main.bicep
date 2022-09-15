@@ -1,7 +1,7 @@
 targetScope = 'subscription'
 
 @minLength(1)
-@maxLength(17)
+@maxLength(20)
 @description('Name of the the environment which is used to generate a short unique hash used in all resources.')
 param name string
 param location string
@@ -30,7 +30,7 @@ param virtualCustomerName string = 'vc-${uniqueSuffix}'
 param apimName string = 'apim-${uniqueSuffix}'
 
 resource resourceGroup 'Microsoft.Resources/resourceGroups@2020-06-01' = {
-  name: 'rg-${name}'
+  name: '${name}'
   location: location
   tags: {
     'azd-env-name': name
@@ -372,3 +372,4 @@ output urls array = [
   'Makeline Orders (Redmond): https://reddog.${containerAppsEnvModule.outputs.defaultDomain}/makeline/orders/Redmond'
   'Accounting Order Metrics (Redmond): https://reddog.${containerAppsEnvModule.outputs.defaultDomain}/accounting/OrderMetrics?StoreId=Redmond'
 ]
+output AZURE_CONTAINER_REGISTRY_ENDPOINT string = registryModule.outputs.loginServer
