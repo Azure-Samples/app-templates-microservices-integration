@@ -3,27 +3,12 @@ param logAnalyticsWorkspaceName string
 param appInsightsName string
 param location string
 
-resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2020-03-01-preview' = {
+resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2021-12-01-preview' existing = {
   name: logAnalyticsWorkspaceName
-  location: location
-  properties: any({
-    retentionInDays: 30
-    features: {
-      searchVersion: 1
-    }
-    sku: {
-      name: 'PerGB2018'
-    }
-  })
 }
 
-resource appInsights 'Microsoft.Insights/components@2020-02-02-preview' = {
+resource appInsights 'Microsoft.Insights/components@2020-02-02-preview' existing = {
   name: appInsightsName
-  location: location
-  kind: 'web'
-  properties: { 
-    Application_Type: 'web'
-  }
 }
 
 resource containerAppsEnv 'Microsoft.App/managedEnvironments@2022-01-01-preview' = {

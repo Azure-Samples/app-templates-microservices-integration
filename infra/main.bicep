@@ -21,16 +21,34 @@ param registryName string = 'acr${replace(uniqueSuffix, '-', '')}'
 param uiServiceName string = 'ui-${uniqueSuffix}'
 param orderServiceName string = 'order-${uniqueSuffix}'
 param virtualCustomerName string = 'vc-${uniqueSuffix}'
+param apimName string = 'apim-${uniqueSuffix}'
+
+module insightsModule 'modules/insights.bicep' = {
+  name: '${deployment().name}--appinsights'
+  params: {
+    appInsightsName: appInsightsName
+    logAnalyticsWorkspaceName: logAnalyticsWorkspaceName
+    location: location
+  }
+}
 
 module apimModule 'modules/apim.bicep' = {
   name: '${deployment().name}--apim'
+  dependsOn: [
+    insightsModule
+  ]
   params: {
-
+    apimName: apimName
+    location: location
+    appInsightsName: appInsightsName
   }
 }
 
 module containerAppsEnvModule 'modules/aca.bicep' = {
   name: '${deployment().name}--containerAppsEnv'
+  dependsOn: [
+    insightsModule
+  ]
   params: {
     location: location
     containerAppsEnvName: containerAppsEnvName
@@ -90,6 +108,7 @@ module appServicePlan 'modules/asp.bicep' = {
   params: {
     location: location
     appServicePlanName: appServicePlanName
+    logAnalyticsWorkspaceName: logAnalyticsWorkspaceName
   }
 }
 
@@ -165,6 +184,7 @@ module orderServiceModule 'modules/appservice.bicep' = {
   name: '${deployment().name}--order-service'
   dependsOn: [
     appServicePlan
+    insightsModule
   ]
   params: {
     webAppName: orderServiceName
@@ -173,6 +193,7 @@ module orderServiceModule 'modules/appservice.bicep' = {
     dockerRegistryUrl: registryModule.outputs.loginServer
     dockerRegistryUsername: registryModule.outputs.username
     dockerRegistryPassword: registryModule.outputs.password
+    appInsightsName: appInsightsName
   }
 }
 
@@ -275,12 +296,8 @@ module accountingServiceModule 'modules/containerApps/accounting.bicep' = {
 module virtualCustomerModule 'modules/functions.bicep' = {
   name: '${deployment().name}--virtual-customer'
   dependsOn: [
-    containerAppsEnvModule
-    orderServiceModule
-    makeLineServiceModule
-    receiptGenerationServiceModule
-    loyaltyServiceModule
-    accountingServiceModule
+    appServicePlan
+    insightsModule
   ]
   params: {
     location: location
@@ -290,6 +307,7 @@ module virtualCustomerModule 'modules/functions.bicep' = {
     dockerRegistryUsername: registryModule.outputs.username
     dockerRegistryPassword: registryModule.outputs.password
     storageAccountAddress: storageModule.outputs.address
+    appInsightsName: appInsightsName
   }
 }
 
@@ -297,6 +315,7 @@ module uiModule 'modules/appservice.bicep' = {
   name: '${deployment().name}--ui'
   dependsOn: [
     appServicePlan
+    insightsModule
   ]
   params: {
     webAppName: uiServiceName
@@ -305,6 +324,7 @@ module uiModule 'modules/appservice.bicep' = {
     dockerRegistryUrl: registryModule.outputs.loginServer
     dockerRegistryUsername: registryModule.outputs.username
     dockerRegistryPassword: registryModule.outputs.password
+    appInsightsName: appInsightsName
   }
 }
 
