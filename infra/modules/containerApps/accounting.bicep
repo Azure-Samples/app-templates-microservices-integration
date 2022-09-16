@@ -4,6 +4,7 @@ param serviceBusNamespaceName string
 param sqlServerName string
 param sqlDatabaseName string
 param sqlAdminLogin string
+@secure()
 param sqlAdminLoginPassword string
 
 resource cappsEnv 'Microsoft.App/managedEnvironments@2022-01-01-preview' existing = {

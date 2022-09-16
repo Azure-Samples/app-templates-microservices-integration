@@ -2,6 +2,7 @@ param sqlServerName string
 param sqlDatabaseName string
 param location string
 param sqlAdminLogin string
+@secure()
 param sqlAdminLoginPassword string
 
 resource sqlserver 'Microsoft.Sql/servers@2021-05-01-preview' = {

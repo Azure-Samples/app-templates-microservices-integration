@@ -1,17 +1,23 @@
-param webAppName string = uniqueString(resourceGroup().id) // Generate unique String for web app name
+param webAppName string
 param location string = resourceGroup().location // Location for all resources
 param serverFarmId string
-param linuxFxVersion string = 'DOCKER|mcr.microsoft.com/appsvc/staticsite:latest'
-param dockerRegistryUrl string = 'https://mcr.microsoft.com'
-param dockerRegistryUsername string
-@secure()
-param dockerRegistryPassword string
 param appInsightsName string
+param registryName string
+param apimName string
+param vueConfig bool = false
 
 var webSiteName = toLower('app-${webAppName}')
 
 resource appInsights 'Microsoft.Insights/components@2020-02-02-preview' existing = {
   name: appInsightsName
+}
+
+resource registry 'Microsoft.ContainerRegistry/registries@2021-06-01-preview' existing = {
+  name: registryName
+}
+
+resource apimResource 'Microsoft.ApiManagement/service@2020-12-01' existing = {
+  name: apimName
 }
 
 resource appService 'Microsoft.Web/sites@2020-06-01' = {
@@ -25,42 +31,44 @@ resource appService 'Microsoft.Web/sites@2020-06-01' = {
       appSettings: [
         {
           name: 'DOCKER_REGISTRY_SERVER_URL'
-          value: dockerRegistryUrl
+          value: registry.properties.loginServer
         }
         {
           name: 'DOCKER_REGISTRY_SERVER_USERNAME'
-          value: dockerRegistryUsername
+          value: registry.listCredentials().username
         }
         {
           name: 'DOCKER_REGISTRY_SERVER_PASSWORD'
-          value: dockerRegistryPassword
+          value: registry.listCredentials().passwords[0].value
         }
         {
           name: 'WEBSITES_ENABLE_APP_SERVICE_STORAGE'
           value: 'false'
         }
+        {
+          name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
+          value: appInsights.properties.InstrumentationKey
+        }
+        {
+          name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
+          value: appInsights.properties.ConnectionString
+        }
+        {
+          name: 'ApplicationInsightsAgent_EXTENSION_VERSION'
+          value: '~3'
+        }
+        {
+          name: 'XDT_MicrosoftApplicationInsights_Mode'
+          value: 'Recommended'
+        }
       ]
-      linuxFxVersion: linuxFxVersion
+      linuxFxVersion: 'DOCKER|${registry.properties.loginServer}/${webAppName}:latest'
       minTlsVersion: '1.2'
     }
   }
 }
 
 resource appServiceLogging 'Microsoft.Web/sites/config@2020-06-01' = {
-  parent: appService
-  name: 'appsettings'
-  properties: {
-    APPINSIGHTS_INSTRUMENTATIONKEY: appInsights.properties.InstrumentationKey
-    APPLICATIONINSIGHTS_CONNECTION_STRING: appInsights.properties.ConnectionString
-    ApplicationInsightsAgent_EXTENSION_VERSION: '~3'
-    XDT_MicrosoftApplicationInsights_Mode: 'Recommended'
-  }
-  dependsOn: [
-    appInsights
-  ]
-}
-
-resource appServiceAppSettings 'Microsoft.Web/sites/config@2020-06-01' = {
   parent: appService
   name: 'logs'
   properties: {
@@ -82,6 +90,19 @@ resource appServiceAppSettings 'Microsoft.Web/sites/config@2020-06-01' = {
       enabled: true
     }
   }
+}
+
+
+resource appServiceAppSettings 'Microsoft.Web/sites/config@2020-06-01' = if (vueConfig) {
+  parent: appService
+  name: 'appsettings'
+  properties: {
+    VUE_APP_MAKELINE_BASE_URL: apimResource.properties.gatewayUrl
+    VUE_APP_ACCOUNTING_BASE_URL: apimResource.properties.gatewayUrl
+  }
+  dependsOn: [
+    apimResource
+  ]
 }
 
 output defaultHostName string = appService.properties.defaultHostName

@@ -28,7 +28,7 @@ resource appInsights 'Microsoft.Insights/components@2020-02-02-preview' existing
   name: appInsightsName
 }
 
-resource apimName_resource 'Microsoft.ApiManagement/service@2020-12-01' = {
+resource apimResource 'Microsoft.ApiManagement/service@2020-12-01' = {
   name: apimName
   location: location
   sku:{
@@ -42,8 +42,8 @@ resource apimName_resource 'Microsoft.ApiManagement/service@2020-12-01' = {
   }
 }
 
-resource apimName_appInsightsLogger_resource 'Microsoft.ApiManagement/service/loggers@2019-01-01' = {
-  parent: apimName_resource
+resource appInsightsLogger 'Microsoft.ApiManagement/service/loggers@2019-01-01' = {
+  parent: apimResource
   name: appInsightsName
   properties: {
     loggerType: 'applicationInsights'
@@ -54,11 +54,11 @@ resource apimName_appInsightsLogger_resource 'Microsoft.ApiManagement/service/lo
   }
 }
 
-resource apimName_applicationinsights 'Microsoft.ApiManagement/service/diagnostics@2019-01-01' = {
-  parent: apimName_resource
+resource appInsightsDiagnostics 'Microsoft.ApiManagement/service/diagnostics@2019-01-01' = {
+  parent: apimResource
   name: 'applicationinsights'
   properties: {
-    loggerId: apimName_appInsightsLogger_resource.id
+    loggerId: appInsightsLogger.id
     alwaysLog: 'allErrors'
     sampling: {
       percentage: 100
@@ -66,3 +66,6 @@ resource apimName_applicationinsights 'Microsoft.ApiManagement/service/diagnosti
     }
   }
 }
+
+output gatewayUrl string = apimResource.properties.gatewayUrl
+output portalUrl string = apimResource.properties.portalUrl

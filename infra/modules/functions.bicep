@@ -1,17 +1,18 @@
 param functionName string = uniqueString(resourceGroup().id) // Generate unique String for web app name
 param location string = resourceGroup().location // Location for all resources
 param serverFarmId string
-param linuxFxVersion string = 'DOCKER|mcr.microsoft.com/azure-functions/dotnet:3.0-appservice-quickstart'
-param dockerRegistryUrl string = 'https://mcr.microsoft.com'
-param dockerRegistryUsername string
-@secure()
-param dockerRegistryPassword string
 param storageAccountAddress string
 param appInsightsName string
+param registryName string
+
 var webSiteName = toLower('app-${functionName}')
 
 resource appInsights 'Microsoft.Insights/components@2020-02-02-preview' existing = {
   name: appInsightsName
+}
+
+resource registry 'Microsoft.ContainerRegistry/registries@2021-06-01-preview' existing = {
+  name: registryName
 }
 
 resource appService 'Microsoft.Web/sites@2020-06-01' = {
@@ -27,16 +28,16 @@ resource appService 'Microsoft.Web/sites@2020-06-01' = {
             value: '~3'
         }
         {
-            name: 'DOCKER_REGISTRY_SERVER_URL'
-            value: dockerRegistryUrl
+          name: 'DOCKER_REGISTRY_SERVER_URL'
+          value: registry.properties.loginServer
         }
         {
-            name: 'DOCKER_REGISTRY_SERVER_USERNAME'
-            value: dockerRegistryUsername
+          name: 'DOCKER_REGISTRY_SERVER_USERNAME'
+          value: registry.listCredentials().username
         }
         {
-            name: 'DOCKER_REGISTRY_SERVER_PASSWORD'
-            value: dockerRegistryPassword
+          name: 'DOCKER_REGISTRY_SERVER_PASSWORD'
+          value: registry.listCredentials().passwords[0].value
         }
         {
             name: 'WEBSITES_ENABLE_APP_SERVICE_STORAGE'
@@ -52,7 +53,7 @@ resource appService 'Microsoft.Web/sites@2020-06-01' = {
               'https://portal.azure.com'
           ]
       }
-      linuxFxVersion: linuxFxVersion
+      linuxFxVersion: 'DOCKER|${registry.properties.loginServer}/${functionName}:latest'
       alwaysOn: true
     }
   }

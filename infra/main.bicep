@@ -25,7 +25,6 @@ param sqlAdminLoginPassword string = take(newGuid(), 16)
 param appServicePlanName string = 'asp-${uniqueSuffix}'
 param registryName string = 'acr${replace(uniqueSuffix, '-', '')}'
 param uiServiceName string = 'ui-${uniqueSuffix}'
-param orderServiceName string = 'order-${uniqueSuffix}'
 param virtualCustomerName string = 'vc-${uniqueSuffix}'
 param apimName string = 'apim-${uniqueSuffix}'
 
@@ -209,21 +208,19 @@ module registryModule 'modules/acr.bicep' = {
   }
 }
 
-module orderServiceModule 'modules/appservice.bicep' = {
+module orderServiceModule 'modules/containerApps/order.bicep' = {
   name: '${deployment().name}--order-service'
   scope: resourceGroup
   dependsOn: [
-    appServicePlan
-    insightsModule
+    containerAppsEnvModule
+    serviceBusModule
+    redisModule
+    daprPubsub
+    daprStateMakeline
   ]
   params: {
-    webAppName: orderServiceName
     location: location
-    serverFarmId: appServicePlan.outputs.id
-    dockerRegistryUrl: registryModule.outputs.loginServer
-    dockerRegistryUsername: registryModule.outputs.username
-    dockerRegistryPassword: registryModule.outputs.password
-    appInsightsName: appInsightsName
+    containerAppsEnvName: containerAppsEnvName
   }
 }
 
@@ -335,16 +332,15 @@ module virtualCustomerModule 'modules/functions.bicep' = {
   dependsOn: [
     appServicePlan
     insightsModule
+    registryModule
   ]
   params: {
     location: location
     functionName: virtualCustomerName
     serverFarmId: appServicePlan.outputs.id
-    dockerRegistryUrl: registryModule.outputs.loginServer
-    dockerRegistryUsername: registryModule.outputs.username
-    dockerRegistryPassword: registryModule.outputs.password
     storageAccountAddress: storageModule.outputs.address
     appInsightsName: appInsightsName
+    registryName: registryName
   }
 }
 
@@ -354,22 +350,23 @@ module uiModule 'modules/appservice.bicep' = {
   dependsOn: [
     appServicePlan
     insightsModule
+    registryModule
   ]
   params: {
     webAppName: uiServiceName
     location: location
     serverFarmId: appServicePlan.outputs.id
-    dockerRegistryUrl: registryModule.outputs.loginServer
-    dockerRegistryUsername: registryModule.outputs.username
-    dockerRegistryPassword: registryModule.outputs.password
     appInsightsName: appInsightsName
+    registryName: registryName
+    apimName: apimName
+    vueConfig: true
   }
 }
 
 output urls array = [
   'UI: https://${uiModule.outputs.defaultHostName}'
-  'Product: https://reddog.${containerAppsEnvModule.outputs.defaultDomain}/product'
-  'Makeline Orders (Redmond): https://reddog.${containerAppsEnvModule.outputs.defaultDomain}/makeline/orders/Redmond'
-  'Accounting Order Metrics (Redmond): https://reddog.${containerAppsEnvModule.outputs.defaultDomain}/accounting/OrderMetrics?StoreId=Redmond'
+  'Product: https://reddog.${apimModule.outputs.gatewayUrl}/product'
+  'Makeline Orders (Redmond): https://reddog.${apimModule.outputs.gatewayUrl}/makeline/orders/Redmond'
+  'Accounting Order Metrics (Redmond): https://reddog.${apimModule.outputs.gatewayUrl}/accounting/OrderMetrics?StoreId=Redmond'
 ]
 output AZURE_CONTAINER_REGISTRY_ENDPOINT string = registryModule.outputs.loginServer
