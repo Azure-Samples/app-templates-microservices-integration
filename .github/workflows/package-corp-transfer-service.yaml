@@ -5,7 +5,7 @@ on:
     branches:
       - 'master'
     paths:
-      - 'RedDog.CorporateTransferService/**'
+      - 'src/RedDog.CorporateTransferService/**'
 
   workflow_dispatch:
 
@@ -46,8 +46,8 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
-          context: RedDog.${{ needs.set-env.outputs.project }}
-          file: RedDog.${{ needs.set-env.outputs.project }}/Dockerfile
+          context: src/RedDog.${{ needs.set-env.outputs.project }}
+          file: src/RedDog.${{ needs.set-env.outputs.project }}/Dockerfile
           push: true
           tags: |
             ${{ needs.set-env.outputs.repository }}/${{ needs.set-env.outputs.image }}:latest
