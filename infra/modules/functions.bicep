@@ -1,11 +1,9 @@
-param functionName string = uniqueString(resourceGroup().id) // Generate unique String for web app name
+param functionName string
 param location string = resourceGroup().location // Location for all resources
 param serverFarmId string
 param storageAccountAddress string
 param appInsightsName string
 param registryName string
-
-var webSiteName = toLower('app-${functionName}')
 
 resource appInsights 'Microsoft.Insights/components@2020-02-02-preview' existing = {
   name: appInsightsName
@@ -16,7 +14,7 @@ resource registry 'Microsoft.ContainerRegistry/registries@2021-06-01-preview' ex
 }
 
 resource appService 'Microsoft.Web/sites@2020-06-01' = {
-  name: webSiteName
+  name: functionName
   location: location
   kind: 'functionapp,linux'
   properties: {

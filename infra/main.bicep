@@ -29,7 +29,7 @@ param virtualCustomerName string = 'vc-${uniqueSuffix}'
 param apimName string = 'apim-${uniqueSuffix}'
 
 resource resourceGroup 'Microsoft.Resources/resourceGroups@2020-06-01' = {
-  name: '${name}'
+  name: '${name}-${uniqueSuffix}'
   location: location
   tags: {
     'azd-env-name': name
@@ -333,6 +333,7 @@ module virtualCustomerModule 'modules/functions.bicep' = {
     appServicePlan
     insightsModule
     registryModule
+    apimModule
   ]
   params: {
     location: location
@@ -351,6 +352,7 @@ module uiModule 'modules/appservice.bicep' = {
     appServicePlan
     insightsModule
     registryModule
+    apimModule
   ]
   params: {
     webAppName: uiServiceName

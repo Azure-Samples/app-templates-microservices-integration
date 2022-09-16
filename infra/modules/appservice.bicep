@@ -6,8 +6,6 @@ param registryName string
 param apimName string
 param vueConfig bool = false
 
-var webSiteName = toLower('app-${webAppName}')
-
 resource appInsights 'Microsoft.Insights/components@2020-02-02-preview' existing = {
   name: appInsightsName
 }
@@ -21,7 +19,7 @@ resource apimResource 'Microsoft.ApiManagement/service@2020-12-01' existing = {
 }
 
 resource appService 'Microsoft.Web/sites@2020-06-01' = {
-  name: webSiteName
+  name: webAppName
   location: location
   kind: 'linux'
   properties: {

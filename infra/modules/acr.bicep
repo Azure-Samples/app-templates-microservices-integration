@@ -22,5 +22,3 @@ resource registry 'Microsoft.ContainerRegistry/registries@2021-06-01-preview' = 
 
 @description('Output the login server property for later use')
 output loginServer string = registry.properties.loginServer
-output username string = registry.listCredentials().username
-output password string = registry.listCredentials().passwords[0].value
