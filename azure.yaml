@@ -8,22 +8,22 @@ infra:
 services:
     order: 
         resourceName: "app-order-reddog-d64f964"
-        project: "./RedDog.OrderService"
+        project: "./src/RedDog.OrderService"
         host: "appservice"
         language: "dotnet"
     ui:
         resourceName: "app-ui-reddog-d64f964"
-        project: "./RedDog.UI"
+        project: "./src/RedDog.UI"
         host: "appservice"
         language: "js"
     virtualCustomer:
         resourceName: "app-vc-reddog-d64f964"
-        project: "./RedDog.VirtualCustomers"
+        project: "./src/RedDog.VirtualCustomers"
         host: "function"
         language: "dotnet"
     accounting:
         resourceName: "accounting-service"
-        project: "./RedDog.AccountingService"
+        project: "./src/RedDog.AccountingService"
         host: "containerapp"
         module: "./modules/containerApps/accounting.bicep"
         docker:
@@ -31,7 +31,7 @@ services:
             context: "../"
     bootstrapper:
         resourceName: "bootstrapper"
-        project: "./RedDog.Bootstrapper"
+        project: "./src/RedDog.Bootstrapper"
         host: "containerapp"
         module: "./modules/containerApps/bootstrapper.bicep"
         docker:
@@ -39,7 +39,7 @@ services:
             context: "../"
     loyalty:
         resourceName: "loyalty-service"
-        project: "./RedDog.LoyaltyService"
+        project: "./src/RedDog.LoyaltyService"
         host: "containerapp"
         module: "./modules/containerApps/loyalty.bicep"
         docker:
@@ -47,7 +47,7 @@ services:
             context: "../"
     makeline:
         resourceName: "makeline-service"
-        project: "./RedDog.MakeLineService"
+        project: "./src/RedDog.MakeLineService"
         host: "containerapp"
         module: "./modules/containerApps/makeline.bicep"
         docker:
@@ -55,7 +55,7 @@ services:
             context: "../"
     receipt:
         resourceName: "receipt-generation-service"
-        project: "./RedDog.ReceiptGenerationService"
+        project: "./src/RedDog.ReceiptGenerationService"
         host: "containerapp"
         module: "./modules/containerApps/receipt.bicep"
         docker:
@@ -63,7 +63,7 @@ services:
             context: "../"
     virtualWorker:
         resourceName: "virtual-worker"
-        project: "./RedDog.VirtualWorker"
+        project: "./src/RedDog.VirtualWorker"
         host: "containerapp"
         module: "./modules/containerApps/virtualworker.bicep"
         docker:
