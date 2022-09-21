@@ -3,10 +3,10 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "name":{
-      "value": "${AZURE_ENV_NAME}"
+      "value": "dev"
     },
     "location":{
-      "value": "${AZURE_LOCATION}"
+      "value": "eastus2"
     },
     "uniqueSeed": {
       "value": "5dfec952-ce67-4b81-a3ff-d64d964f2df3-reddog-app-template"
@@ -64,9 +64,6 @@
     },
     "uiServiceName": {
       "value": "ui-reddog-d64f964"
-    },
-    "orderServiceName": {
-      "value": "order-reddog-d64f964"
     },
     "virtualCustomerName": {
       "value": "vc-reddog-d64f964"
