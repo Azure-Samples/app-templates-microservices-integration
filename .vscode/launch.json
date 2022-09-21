@@ -9,7 +9,7 @@
             "request": "launch",
             "name": "Debug UI",
             "runtimeExecutable": "npm",
-            "cwd": "${workspaceFolder}/RedDog.UI",
+            "cwd": "${workspaceFolder}/src/RedDog.UI",
             "runtimeArgs": [
                 "run",
                 "serve"
@@ -29,9 +29,9 @@
             "request": "launch",
             "preLaunchTask": "Build OrderService",
             "postDebugTask": "Dapr Stop OrderService",
-            "program": "${workspaceFolder}/RedDog.OrderService/bin/Debug/net6.0/RedDog.OrderService.dll",
+            "program": "${workspaceFolder}/src/RedDog.OrderService/bin/Debug/net6.0/src/RedDog.OrderService.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/RedDog.OrderService",
+            "cwd": "${workspaceFolder}/src/RedDog.OrderService",
             "stopAtEntry": false,
             "env": {
                 "ASPNETCORE_ENVIRONMENT": "Development",
@@ -46,9 +46,9 @@
             "request": "launch",
             "preLaunchTask": "Build MakeLineService",
             "postDebugTask": "Dapr Stop MakeLineService",
-            "program": "${workspaceFolder}/RedDog.MakeLineService/bin/Debug/net6.0/RedDog.MakeLineService.dll",
+            "program": "${workspaceFolder}/src/RedDog.MakeLineService/bin/Debug/net6.0/src/RedDog.MakeLineService.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/RedDog.MakeLineService",
+            "cwd": "${workspaceFolder}/src/RedDog.MakeLineService",
             "stopAtEntry": false,
             "env": {
                 "ASPNETCORE_ENVIRONMENT": "Development",
@@ -63,9 +63,9 @@
             "request": "launch",
             "preLaunchTask": "Build ReceiptGenerationService",
             "postDebugTask": "Dapr Stop ReceiptGenerationService",
-            "program": "${workspaceFolder}/RedDog.ReceiptGenerationService/bin/Debug/net6.0/RedDog.ReceiptGenerationService.dll",
+            "program": "${workspaceFolder}/src/RedDog.ReceiptGenerationService/bin/Debug/net6.0/src/RedDog.ReceiptGenerationService.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/RedDog.ReceiptGenerationService",
+            "cwd": "${workspaceFolder}/src/RedDog.ReceiptGenerationService",
             "stopAtEntry": false,
             "env": {
                 "ASPNETCORE_ENVIRONMENT": "Development",
@@ -80,9 +80,9 @@
             "request": "launch",
             "preLaunchTask": "Build LoyaltyService",
             "postDebugTask": "Dapr Stop LoyaltyService",
-            "program": "${workspaceFolder}/RedDog.LoyaltyService/bin/Debug/net6.0/RedDog.LoyaltyService.dll",
+            "program": "${workspaceFolder}/src/RedDog.LoyaltyService/bin/Debug/net6.0/src/RedDog.LoyaltyService.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/RedDog.LoyaltyService",
+            "cwd": "${workspaceFolder}/src/RedDog.LoyaltyService",
             "stopAtEntry": false,
             "env": {
                 "ASPNETCORE_ENVIRONMENT": "Development",
@@ -97,9 +97,9 @@
             "request": "launch",
             "preLaunchTask": "Build VirtualWorker",
             "postDebugTask": "Dapr Stop VirtualWorker",
-            "program": "${workspaceFolder}/RedDog.VirtualWorker/bin/Debug/net6.0/RedDog.VirtualWorker.dll",
+            "program": "${workspaceFolder}/src/RedDog.VirtualWorker/bin/Debug/net6.0/src/RedDog.VirtualWorker.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/RedDog.VirtualWorker",
+            "cwd": "${workspaceFolder}/src/RedDog.VirtualWorker",
             "stopAtEntry": false,
             "env": {
                 "DOTNETCORE_ENVIRONMENT": "Development",
@@ -115,9 +115,9 @@
             "request": "launch",
             "preLaunchTask": "Build VirtualCustomers",
             "postDebugTask": "Dapr Stop VirtualCustomers",
-            "program": "${workspaceFolder}/RedDog.VirtualCustomers/bin/Debug/net6.0/RedDog.VirtualCustomers.dll",
+            "program": "${workspaceFolder}/src/RedDog.VirtualCustomers/bin/Debug/net6.0/src/RedDog.VirtualCustomers.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/RedDog.VirtualCustomers",
+            "cwd": "${workspaceFolder}/src/RedDog.VirtualCustomers",
             "stopAtEntry": false,
             "env": {
                 "ASPNETCORE_ENVIRONMENT": "Development",
@@ -132,9 +132,9 @@
             "request": "launch",
             "preLaunchTask": "Build AccountingService",
             "postDebugTask": "Dapr Stop AccountingService",
-            "program": "${workspaceFolder}/RedDog.AccountingService/bin/Debug/net6.0/RedDog.AccountingService.dll",
+            "program": "${workspaceFolder}/src/RedDog.AccountingService/bin/Debug/net6.0/src/RedDog.AccountingService.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/RedDog.AccountingService",
+            "cwd": "${workspaceFolder}/src/RedDog.AccountingService",
             "stopAtEntry": false,
             "env": {
                 "ASPNETCORE_ENVIRONMENT": "Development",
@@ -149,9 +149,9 @@
             "request": "launch",
             "preLaunchTask": "Build AccountingService",
             "postDebugTask": "Dapr Stop AccountingService",
-            "program": "${workspaceFolder}/RedDog.AccountingService/bin/Debug/net6.0/RedDog.AccountingService.dll",
+            "program": "${workspaceFolder}/src/RedDog.AccountingService/bin/Debug/net6.0/src/RedDog.AccountingService.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/RedDog.AccountingService",
+            "cwd": "${workspaceFolder}/src/RedDog.AccountingService",
             "stopAtEntry": false,
             "env": {
                 "ASPNETCORE_ENVIRONMENT": "Development",
@@ -165,9 +165,9 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "Build Bootstrapper",
-            "program": "${workspaceFolder}/RedDog.Bootstrapper/bin/Debug/net6.0/RedDog.Bootstrapper.dll",
+            "program": "${workspaceFolder}/src/RedDog.Bootstrapper/bin/Debug/net6.0/src/RedDog.Bootstrapper.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/RedDog.Bootstrapper",
+            "cwd": "${workspaceFolder}/src/RedDog.Bootstrapper",
             "stopAtEntry": false,
             "env": {
                 "DAPR_HTTP_PORT": "5880",
@@ -186,7 +186,7 @@
                 "Debug AccountingService",
                 "Debug VirtualWorker",
                 "Debug VirtualCustomers",
-                // "Debug UI"
+                "Debug UI"
             ]
         },
     ]

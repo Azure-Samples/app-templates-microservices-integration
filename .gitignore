@@ -644,8 +644,8 @@ yarn-error.log
 **/*.pfx
 
 # KEDA deployment yml with secrets
-RedDog.CorporateTransferService/func-deployment.yaml
-RedDog.CorporateTransferService/local.settings.json
+src/RedDog.CorporateTransferService/func-deployment.yaml
+src/RedDog.CorporateTransferService/local.settings.json
 
 # Brian
 brian-notes.md
@@ -655,3 +655,4 @@ contoso-health-notes.md
 components/local/
 
 secrets.json
+.azure

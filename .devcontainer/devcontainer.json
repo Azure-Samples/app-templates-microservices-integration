@@ -20,6 +20,7 @@
 	"extensions": [
 		"ms-azuretools.vscode-dapr",
 		"ms-azuretools.vscode-docker",
+		"ms-azuretools.vscode-bicep",
 		"ms-dotnettools.csharp",
 		"humao.rest-client"
 	],

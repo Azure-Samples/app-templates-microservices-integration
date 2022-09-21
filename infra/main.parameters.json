@@ -1,0 +1,78 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "name":{
+      "value": "${AZURE_ENV_NAME}"
+    },
+    "location":{
+      "value": "${AZURE_LOCATION}"
+    },
+    "uniqueSeed": {
+      "value": "5dfec952-ce67-4b81-a3ff-d64d964f2df3-reddog-app-template"
+    },
+    "uniqueSuffix": {
+      "value": "reddog-d64f964"
+    },
+    "containerAppsEnvName": {
+      "value": "cae-reddog-d64f964"
+    },
+    "logAnalyticsWorkspaceName": {
+      "value": "log-reddog-d64f964"
+    },
+    "appInsightsName": {
+      "value": "appi-reddog-d64f964"
+    },
+    "serviceBusNamespaceName": {
+      "value": "sb-reddog-d64f964"
+    },
+    "redisName": {
+      "value": "redis-reddog-d64f964"
+    },
+    "cosmosAccountName": {
+      "value": "cosmos-reddog-d64f964"
+    },
+    "cosmosDatabaseName": {
+      "value": "reddog"
+    },
+    "cosmosCollectionName": {
+      "value": "loyalty"
+    },
+    "storageAccountName": {
+      "value": "streddogd64f964"
+    },
+    "blobContainerName": {
+      "value": "receipts"
+    },
+    "sqlServerName": {
+      "value": "sql-reddog-d64f964"
+    },
+    "sqlDatabaseName": {
+      "value": "reddog"
+    },
+    "sqlAdminLogin": {
+      "value": "reddog"
+    },
+    "sqlAdminLoginPassword": {
+      "value": "4b81-5dfec952-d64f964"
+    },
+    "appServicePlanName": {
+      "value": "asp-reddog-d64f964"
+    },
+    "registryName": {
+      "value": "acrreddogd64f964"
+    },
+    "uiServiceName": {
+      "value": "ui-reddog-d64f964"
+    },
+    "orderServiceName": {
+      "value": "order-reddog-d64f964"
+    },
+    "virtualCustomerName": {
+      "value": "vc-reddog-d64f964"
+    },
+    "apimName": {
+      "value": "apim-reddog-d64f964"
+    }
+  }
+}
