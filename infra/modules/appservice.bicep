@@ -30,7 +30,7 @@ resource appService 'Microsoft.Web/sites@2020-06-01' = {
         {
           name: 'DOCKER_REGISTRY_SERVER_URL'
           //value: registry.properties.loginServer
-          value: 'https://ghcr.io/azure'
+          value: 'https://ghcr.io'
         }
         /*{
           name: 'DOCKER_REGISTRY_SERVER_USERNAME'
