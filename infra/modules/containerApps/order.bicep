@@ -29,7 +29,7 @@ resource orderService 'Microsoft.App/containerApps@2022-03-01' = {
         }
       ]
       scale: {
-        minReplicas: 0
+        minReplicas: 1
       }
     }
     configuration: {
@@ -40,7 +40,7 @@ resource orderService 'Microsoft.App/containerApps@2022-03-01' = {
         appProtocol: 'http'
       }
       ingress: {
-        external: false
+        external: true
         targetPort: 80
       }
     }

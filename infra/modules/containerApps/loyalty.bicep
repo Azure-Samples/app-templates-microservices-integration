@@ -34,7 +34,7 @@ resource loyaltyService 'Microsoft.App/containerApps@2022-03-01' = {
         }
       ]
       scale: {
-        minReplicas: 0
+        minReplicas: 1
         rules: [
           {
             name: 'service-bus-scale-rule'
