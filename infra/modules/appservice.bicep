@@ -29,16 +29,17 @@ resource appService 'Microsoft.Web/sites@2020-06-01' = {
       appSettings: [
         {
           name: 'DOCKER_REGISTRY_SERVER_URL'
-          value: registry.properties.loginServer
+          //value: registry.properties.loginServer
+          value: 'https://ghcr.io/azure'
         }
-        {
+        /*{
           name: 'DOCKER_REGISTRY_SERVER_USERNAME'
           value: registry.listCredentials().username
         }
         {
           name: 'DOCKER_REGISTRY_SERVER_PASSWORD'
           value: registry.listCredentials().passwords[0].value
-        }
+        }*/
         {
           name: 'WEBSITES_ENABLE_APP_SERVICE_STORAGE'
           value: 'false'
@@ -60,7 +61,8 @@ resource appService 'Microsoft.Web/sites@2020-06-01' = {
           value: 'Recommended'
         }
       ]
-      linuxFxVersion: 'DOCKER|${registry.properties.loginServer}/${webAppName}:latest'
+      //linuxFxVersion: 'DOCKER|${registry.properties.loginServer}/${webAppName}:latest'
+      linuxFxVersion: 'DOCKER|ghcr.io/azure/reddog-retail-demo/reddog-retail-ui:latest'
       minTlsVersion: '1.2'
     }
   }
