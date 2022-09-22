@@ -13,6 +13,7 @@ namespace RedDog.VirtualCustomer
 {
     public class CreateOrders
     {
+        private static readonly string orderServiceUrl = Environment.GetEnvironmentVariable("ORDER_SERVICE_URL");
         private static readonly string storeId = Environment.GetEnvironmentVariable("STORE_ID") ?? "Redmond";
         public static readonly int maxItemQuantity = int.Parse(Environment.GetEnvironmentVariable("MAX_ITEM_QUANTITY") ?? "1");
         public static readonly int maxUniqueItemsPerOrder = int.Parse(Environment.GetEnvironmentVariable("MAX_UNIQUE_ITEMS_PER_ORDER") ?? "10");
@@ -231,6 +232,7 @@ namespace RedDog.VirtualCustomer
         public CreateOrders(IHttpClientFactory httpClientFactory)
         {
             _httpClient = httpClientFactory.CreateClient();
+            _httpClient.BaseAddress = new Uri(orderServiceUrl);
             _random = new Random();
         }
 
