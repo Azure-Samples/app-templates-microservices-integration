@@ -1,6 +1,7 @@
 param appServicePlanName string = uniqueString(resourceGroup().id)
 param location string = resourceGroup().location // Location for all resources
 param sku string = 'S1' // The SKU of App Service Plan
+param kind string = 'linux'
 param logAnalyticsWorkspaceName string 
 
 resource appServicePlan 'Microsoft.Web/serverfarms@2022-03-01' = {
@@ -12,7 +13,7 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2022-03-01' = {
   sku: {
     name: sku
   }
-  kind: 'linux'
+  kind: kind
 }
 
 resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2021-12-01-preview' existing = {
