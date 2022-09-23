@@ -1,10 +1,13 @@
 param functionName string
 param location string = resourceGroup().location // Location for all resources
 param serverFarmId string
-param storageAccountAddress string
+param storageAccountName string
 param appInsightsName string
 param registryName string
 
+resource storageAccount 'Microsoft.Storage/storageAccounts@2021-06-01' existing = {
+  name: storageAccountName
+}
 resource appInsights 'Microsoft.Insights/components@2020-02-02-preview' existing = {
   name: appInsightsName
 }
@@ -16,7 +19,7 @@ resource registry 'Microsoft.ContainerRegistry/registries@2021-06-01-preview' ex
 resource appService 'Microsoft.Web/sites@2020-06-01' = {
   name: functionName
   location: location
-  kind: 'functionapp,linux'
+  kind: 'functionapp,linux,container'
   properties: {
     serverFarmId: serverFarmId
     siteConfig: {
