@@ -1,9 +1,13 @@
 param functionName string
 param location string = resourceGroup().location // Location for all resources
 param serverFarmId string
-param storageAccountAddress string
+param storageAccountName string
 param appInsightsName string
 param registryName string
+
+resource storageAccount 'Microsoft.Storage/storageAccounts@2021-06-01' existing = {
+  name: storageAccountName
+}
 
 resource appInsights 'Microsoft.Insights/components@2020-02-02-preview' existing = {
   name: appInsightsName
@@ -16,7 +20,7 @@ resource registry 'Microsoft.ContainerRegistry/registries@2021-06-01-preview' ex
 resource appService 'Microsoft.Web/sites@2020-06-01' = {
   name: functionName
   location: location
-  kind: 'functionapp,linux'
+  kind: 'functionapp,linux,container'
   properties: {
     serverFarmId: serverFarmId
     siteConfig: {
@@ -38,12 +42,20 @@ resource appService 'Microsoft.Web/sites@2020-06-01' = {
           value: registry.listCredentials().passwords[0].value
         }
         {
-            name: 'WEBSITES_ENABLE_APP_SERVICE_STORAGE'
-            value: 'false'
+          name: 'AzureWebJobsStorage'
+          value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
         }
         {
-          name: 'AzureWebJobsStorage'
-          value: storageAccountAddress
+          name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
+          value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
+        }
+        {
+          name: 'WEBSITE_CONTENTSHARE'
+          value: toLower(functionName)
+        }
+        {
+            name: 'WEBSITES_ENABLE_APP_SERVICE_STORAGE'
+            value: 'false'
         }
       ]
       cors: {
@@ -51,7 +63,7 @@ resource appService 'Microsoft.Web/sites@2020-06-01' = {
               'https://portal.azure.com'
           ]
       }
-      linuxFxVersion: 'DOCKER|${registry.properties.loginServer}/${functionName}:latest'
+      linuxFxVersion: 'DOCKER|${registry.properties.loginServer}/reddog/${functionName}:latest'
       alwaysOn: true
     }
   }
