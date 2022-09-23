@@ -18,8 +18,12 @@ ARG INSTALL_AZD_CLI="false"
 RUN if [ "$INSTALL_AZD_CLI" = "true" ]; then curl -fsSL https://aka.ms/install-azd.sh | bash ; fi
 
 # Install Azure Functions core tools
-RUN apt-get update \
-    && apt-get -y install azure-functions-core-tools-4 \
+RUN curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg \
+    && sudo mv microsoft.gpg /etc/apt/trusted.gpg.d/microsoft.gpg \
+    && apt-get update \
+    && sudo sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/debian/$(lsb_release -rs | cut -d'.' -f 1)/prod $(lsb_release -cs) main" > /etc/apt/sources.list.d/dotnetdev.list' \
+    && sudo apt-get update \
+    && apt-get -y install azure-functions-core-tools-4
 
 # [Option] Enable non-root Docker access in container
 ARG ENABLE_NONROOT_DOCKER="true"
