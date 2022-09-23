@@ -21,6 +21,9 @@
 		"ms-azuretools.vscode-dapr",
 		"ms-azuretools.vscode-docker",
 		"ms-azuretools.vscode-bicep",
+		"ms-azuretools.vscode-azurefunctions",
+		"ms-vscode.azure-account",
+		"ms-azuretools.vscode-azureresourcegroups",
 		"ms-dotnettools.csharp",
 		"humao.rest-client",
 		"azurite.azurite"
