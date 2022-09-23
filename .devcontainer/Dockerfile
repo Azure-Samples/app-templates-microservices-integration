@@ -17,6 +17,10 @@ RUN if [ "$INSTALL_AZURE_CLI" = "true" ]; then bash /tmp/library-scripts/azcli-d
 ARG INSTALL_AZD_CLI="false"
 RUN if [ "$INSTALL_AZD_CLI" = "true" ]; then curl -fsSL https://aka.ms/install-azd.sh | bash ; fi
 
+# Install Azure Functions core tools
+RUN apt-get update \
+    && apt-get -y install azure-functions-core-tools-4 \
+
 # [Option] Enable non-root Docker access in container
 ARG ENABLE_NONROOT_DOCKER="true"
 # [Option] Use the OSS Moby CLI instead of the licensed Docker CLI
