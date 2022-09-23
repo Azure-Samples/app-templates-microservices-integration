@@ -1,8 +1,8 @@
 {
   "profiles": {
-    "RedDog_VirtualCustomer": {
+    "RedDog.VirtualCustomer": {
       "commandName": "Project",
-      "commandLineArgs": "--port 7203",
+      "commandLineArgs": "--port 7291",
       "launchBrowser": false
     }
   }

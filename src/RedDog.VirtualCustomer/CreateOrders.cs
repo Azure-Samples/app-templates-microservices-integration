@@ -237,22 +237,24 @@ namespace RedDog.VirtualCustomer
         }
 
         [FunctionName("CreateOrders")]
-        public async Task Run([TimerTrigger("0 */5 * * * *")] TimerInfo myTimer, ILogger log, CancellationToken stoppingToken)
+        public async Task Run([TimerTrigger("*/5 * * * * *")] TimerInfo myTimer, ILogger log, CancellationToken stoppingToken)
         {
             log.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
             int ordersCreated = 0;
 
             try
             {
+                log.LogInformation($"Retrieving products from: {_httpClient.BaseAddress}/product");
                 _products = await _httpClient.GetAsync<List<Product>>("product");
+                log.LogInformation($"Successfully retrieved {_products.Count} products");
+
+                await CreateOrder(log, stoppingToken);
+                ordersCreated += 1;
             }
             catch (Exception e)
             {
                 log.LogError("Error retrieving products. Retrying in 5 seconds. Message: {Message}", e.InnerException?.Message ?? e.Message);
             }
-
-            await CreateOrder(log, stoppingToken);
-            ordersCreated += 1;
         }
 
         public async Task CreateOrder(ILogger log, CancellationToken stoppingToken)
@@ -294,6 +296,7 @@ namespace RedDog.VirtualCustomer
             order.OrderItems = orderItems;
             if (!stoppingToken.IsCancellationRequested)
             {
+                log.LogInformation($"Placing orders at: {_httpClient.BaseAddress}/order");
                 var response = await _httpClient.PostAsync("order", new JsonContent(order)).ConfigureAwait(false);
 
                 if (!response.IsSuccessStatusCode)
