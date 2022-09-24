@@ -1,0 +1,83 @@
+<!--
+    IMPORTANT:
+    - Policy elements can appear only within the <inbound>, <outbound>, <backend> section elements.
+    - Only the <forward-request> policy element can appear within the <backend> section element.
+    - To apply a policy to the incoming request (before it is forwarded to the backend service), place a corresponding policy element within the <inbound> section element.
+    - To apply a policy to the outgoing response (before it is sent back to the caller), place a corresponding policy element within the <outbound> section element.
+    - To add a policy position the cursor at the desired insertion point and click on the round button associated with the policy.
+    - To remove a policy, delete the corresponding policy statement from the policy document.
+    - Policies are applied in the order of their appearance, from the top down.
+-->
+<policies>
+    <inbound>
+        <rate-limit-by-key calls="120" renewal-period="60" counter-key="@(context.Subscription.Id)" />
+        <!-- Distributed tracing support by adding correlationId using COMB format-->
+        <!-- NOTE: If COMB format is not needed, context.RequestId should be used as a value of correlation id. -->
+        <!-- context.RequestId is unique for each request and is stored as part of gateway log records. -->
+        <!-- https://learn.microsoft.com/en-us/azure/api-management/policies/add-correlation-id -->
+        <set-header name="correlationid" exists-action="skip">
+            <value>@{ 
+                var guidBinary = new byte[16];
+                Array.Copy(Guid.NewGuid().ToByteArray(), 0, guidBinary, 0, 10);
+                long time = DateTime.Now.Ticks;
+                byte[] bytes = new byte[6];
+                unchecked
+                {
+                       bytes[5] = (byte)(time >> 40);
+                       bytes[4] = (byte)(time >> 32);
+                       bytes[3] = (byte)(time >> 24);
+                       bytes[2] = (byte)(time >> 16);
+                       bytes[1] = (byte)(time >> 8);
+                       bytes[0] = (byte)(time);
+                }
+                Array.Copy(bytes, 0, guidBinary, 10, 6);
+                return new Guid(guidBinary).ToString();
+            }</value>
+        </set-header>
+        <!-- To test the policy you can use https://jwt.io to generate tokens. -->
+        <!-- https://learn.microsoft.com/en-us/azure/api-management/policies/authorize-request-based-on-jwt-claims -->
+        <!-- Uncomment the following "choose" block to validate JWT tokens  -->
+        <!-- 
+            <choose>
+                <when condition="@(context.Request.Method.Equals("patch=""",StringComparison.OrdinalIgnoreCase))">
+                <validate-jwt header-name="Authorization">
+                    <issuer-signing-keys>
+                    <key>{{signing-key}}</key>
+                    </issuer-signing-keys>
+                    <required-claims>
+                    <claim name="edit">
+                        <value>true</value>
+                    </claim>
+                    </required-claims>
+                </validate-jwt>
+                </when>
+                <when condition="@(new [] {"post=""", "put="""}.Contains(context.Request.Method,StringComparer.OrdinalIgnoreCase))">
+                <validate-jwt header-name="Authorization">
+                    <issuer-signing-keys>
+                    <key>{{signing-key}}</key>
+                    </issuer-signing-keys>
+                    <required-claims>
+                    <claim name="create">
+                        <value>true</value>
+                    </claim>
+                    </required-claims>
+                </validate-jwt>
+                </when>
+                <otherwise>
+                <validate-jwt header-name="Authorization">
+                    <issuer-signing-keys>
+                    <key>{{signing-key}}</key>
+                    </issuer-signing-keys>
+                </validate-jwt>
+                </otherwise>
+            </choose>
+        -->
+    </inbound>
+    <backend>
+        <forward-request />
+    </backend>
+    <outbound>
+        <redirect-content-urls />
+    </outbound>
+    <on-error />
+</policies>
