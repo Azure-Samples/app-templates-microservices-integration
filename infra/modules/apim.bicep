@@ -1,4 +1,3 @@
-
 @description('The name of the API Management resource to be created.')
 param apimName string
 
@@ -39,6 +38,15 @@ resource apimResource 'Microsoft.ApiManagement/service@2020-12-01' = {
     virtualNetworkType: 'External'
     publisherEmail: publisherEmail
     publisherName: publisherName
+  }
+}
+
+resource apimPolicy 'Microsoft.ApiManagement/service/policies@2021-12-01-preview' = {
+  name: '${apimName}policy'
+  parent: apimResource
+  properties:{
+    format: 'rawxml'
+    value: loadTextContent('apimPolicies/global.xml')
   }
 }
 
