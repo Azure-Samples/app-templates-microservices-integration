@@ -49,6 +49,79 @@ resource apimPolicy 'Microsoft.ApiManagement/service/policies@2021-12-01-preview
   }
 }
 
+resource accountingApiResource 'Microsoft.ApiManagement/service/apis@2021-12-01-preview' = {
+  parent: apimResource
+  name: 'accounting-service'
+  properties: {
+    displayName: 'AccountingService'
+    subscriptionRequired: false
+    path: 'accounting'
+    protocols: [
+      'https'
+    ]
+    isCurrent: true
+  }
+}
+
+resource makelineApiResource 'Microsoft.ApiManagement/service/apis@2021-12-01-preview' = {
+  parent: apimResource
+  name: 'makeline-service'
+  properties: {
+    displayName: 'MakeLineService'
+    subscriptionRequired: false
+    path: 'makeline'
+    protocols: [
+      'https'
+    ]
+    isCurrent: true
+  }
+}
+
+resource accountingService 'Microsoft.App/containerApps@2022-03-01' existing = {
+  name: 'accounting-service'
+}
+
+resource accountingBackendResource 'Microsoft.ApiManagement/service/backends@2021-12-01-preview' = {
+  name: 'ContainerApp_accounting-service'
+  parent: apimResource
+  properties: {
+    description: 'accounting-service'
+    url: accountingService.properties.configuration.ingress.fqdn
+    protocol: 'http'
+    resourceId: accountingService.id
+  }
+}
+
+resource makeLineService 'Microsoft.App/containerApps@2022-03-01' existing = {
+  name: 'make-line-service'
+}
+
+resource makelineBackendResource 'Microsoft.ApiManagement/service/backends@2021-12-01-preview' = {
+  name: 'ContainerApp_make-line-service'
+  parent: apimResource
+  properties: {
+    description: 'make-line-service'
+    url: makeLineService.properties.configuration.ingress.fqdn
+    protocol: 'http'
+    resourceId: makeLineService.id
+  }
+}
+
+resource orderService 'Microsoft.App/containerApps@2022-03-01' existing = {
+  name: 'order-service'
+}
+
+resource orderBackendResource 'Microsoft.ApiManagement/service/backends@2021-12-01-preview' = {
+  name: 'ContainerApp_order-service'
+  parent: apimResource
+  properties: {
+    description: 'order-service'
+    url: orderService.properties.configuration.ingress.fqdn
+    protocol: 'http'
+    resourceId: orderService.id
+  }
+}
+
 resource appInsightsLogger 'Microsoft.ApiManagement/service/loggers@2019-01-01' = {
   parent: apimResource
   name: appInsightsName

@@ -47,19 +47,6 @@ module insightsModule 'modules/insights.bicep' = {
   }
 }
 
-module apimModule 'modules/apim.bicep' = {
-  name: '${deployment().name}--apim'
-  scope: resourceGroup
-  dependsOn: [
-    insightsModule
-  ]
-  params: {
-    apimName: apimName
-    location: location
-    appInsightsName: appInsightsName
-  }
-}
-
 module containerAppsEnvModule 'modules/aca.bicep' = {
   name: '${deployment().name}--containerAppsEnv'
   scope: resourceGroup
@@ -338,6 +325,22 @@ module accountingServiceModule 'modules/containerApps/accounting.bicep' = {
     sqlDatabaseName: sqlDatabaseName
     sqlAdminLogin: sqlAdminLogin
     sqlAdminLoginPassword: sqlAdminLoginPassword
+  }
+}
+
+module apimModule 'modules/apim.bicep' = {
+  name: '${deployment().name}--apim'
+  scope: resourceGroup
+  dependsOn: [
+    insightsModule
+    accountingServiceModule
+    orderServiceModule
+    makeLineServiceModule
+  ]
+  params: {
+    apimName: apimName
+    location: location
+    appInsightsName: appInsightsName
   }
 }
 
