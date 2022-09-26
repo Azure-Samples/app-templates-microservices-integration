@@ -3,13 +3,13 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "name":{
-      "value": "${AZURE_ENV_NAME}"
+      "value": "test"
     },
     "location":{
-      "value": "${AZURE_LOCATION}"
+      "value": "eastus2"
     },
     "uniqueSuffix": {
-      "value": "reddog-d64f964"
+      "value": "reddog-6a034c03"
     }
   }
 }
