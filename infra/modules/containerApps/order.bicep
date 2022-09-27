@@ -1,8 +1,13 @@
 param containerAppsEnvName string
 param location string
+param registryName string
 
 resource cappsEnv 'Microsoft.App/managedEnvironments@2022-01-01-preview' existing = {
   name: containerAppsEnvName
+}
+
+resource registry 'Microsoft.ContainerRegistry/registries@2021-06-01-preview' existing = {
+  name: registryName
 }
 
 resource orderService 'Microsoft.App/containerApps@2022-03-01' = {
@@ -14,7 +19,7 @@ resource orderService 'Microsoft.App/containerApps@2022-03-01' = {
       containers: [
         {
           name: 'order-service'
-          image: 'ghcr.io/azure/reddog-retail-demo/reddog-retail-order-service:latest'
+          image: '${registry.properties.loginServer}/reddog/order-service:latest'
           probes: [
             {
               type: 'startup'
@@ -43,6 +48,19 @@ resource orderService 'Microsoft.App/containerApps@2022-03-01' = {
         external: true
         targetPort: 80
       }
+      secrets: [
+        {
+          name: 'registry'
+          value: registry.listCredentials().passwords[0].value
+        }
+      ]
+      registries: [
+        {
+          server: registry.properties.loginServer
+          username: registry.listCredentials().username
+          passwordSecretRef: 'registry'
+        }
+      ]
     }
   }
 }

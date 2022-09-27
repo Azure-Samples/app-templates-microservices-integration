@@ -1,8 +1,13 @@
 param containerAppsEnvName string
 param location string
+param registryName string
 
 resource cappsEnv 'Microsoft.App/managedEnvironments@2022-01-01-preview' existing = {
   name: containerAppsEnvName
+}
+
+resource registry 'Microsoft.ContainerRegistry/registries@2021-06-01-preview' existing = {
+  name: registryName
 }
 
 resource virtualWorker 'Microsoft.App/containerApps@2022-03-01' = {
@@ -14,7 +19,7 @@ resource virtualWorker 'Microsoft.App/containerApps@2022-03-01' = {
       containers: [
         {
           name: 'virtual-worker'
-          image: 'ghcr.io/azure/reddog-retail-demo/reddog-retail-virtual-worker:latest'
+          image: '${registry.properties.loginServer}/reddog/virtual-worker:latest'
           env: [
             {
               name: 'MIN_SECONDS_TO_COMPLETE_ITEM'
@@ -53,6 +58,19 @@ resource virtualWorker 'Microsoft.App/containerApps@2022-03-01' = {
         external: false
         targetPort: 80
       }
+      secrets: [
+        {
+          name: 'registry'
+          value: registry.listCredentials().passwords[0].value
+        }
+      ]
+      registries: [
+        {
+          server: registry.properties.loginServer
+          username: registry.listCredentials().username
+          passwordSecretRef: 'registry'
+        }
+      ]
     }
   }
 }

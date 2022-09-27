@@ -1,9 +1,14 @@
 param containerAppsEnvName string
 param location string
 param serviceBusNamespaceName string
+param registryName string
 
 resource cappsEnv 'Microsoft.App/managedEnvironments@2022-01-01-preview' existing = {
   name: containerAppsEnvName
+}
+
+resource registry 'Microsoft.ContainerRegistry/registries@2021-06-01-preview' existing = {
+  name: registryName
 }
 
 resource serviceBus 'Microsoft.ServiceBus/namespaces@2021-06-01-preview' existing = {
@@ -19,7 +24,7 @@ resource loyaltyService 'Microsoft.App/containerApps@2022-03-01' = {
       containers: [
         {
           name: 'loyalty-service'
-          image: 'ghcr.io/azure/reddog-retail-demo/reddog-retail-loyalty-service:latest'
+          image: '${registry.properties.loginServer}/reddog/loyalty-service:latest'
           probes: [
             {
               type: 'startup'
@@ -71,6 +76,17 @@ resource loyaltyService 'Microsoft.App/containerApps@2022-03-01' = {
         {
           name: 'sb-root-connectionstring'
           value: listKeys('${serviceBus.id}/AuthorizationRules/RootManageSharedAccessKey', serviceBus.apiVersion).primaryConnectionString
+        }
+        {
+          name: 'registry'
+          value: registry.listCredentials().passwords[0].value
+        }
+      ]
+      registries: [
+        {
+          server: registry.properties.loginServer
+          username: registry.listCredentials().username
+          passwordSecretRef: 'registry'
         }
       ]
     }
