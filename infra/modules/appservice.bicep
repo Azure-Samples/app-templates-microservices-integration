@@ -21,7 +21,7 @@ resource apimResource 'Microsoft.ApiManagement/service@2020-12-01' existing = {
 resource appService 'Microsoft.Web/sites@2020-06-01' = {
   name: webAppName
   location: location
-  kind: 'linux'
+  kind: 'linux,container'
   properties: {
     serverFarmId: serverFarmId
     httpsOnly: true

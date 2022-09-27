@@ -41,6 +41,15 @@ resource apimResource 'Microsoft.ApiManagement/service@2020-12-01' = {
   }
 }
 
+resource apimPolicy 'Microsoft.ApiManagement/service/policies@2021-12-01-preview' = {
+  name: 'policy'
+  parent: apimResource
+  properties: {
+    format: 'rawxml'
+    value: loadTextContent('apimPolicies/global.xml')
+  }
+}
+
 resource accountingApiResource 'Microsoft.ApiManagement/service/apis@2021-12-01-preview' = {
   parent: apimResource
   name: 'accounting-service'
@@ -136,6 +145,36 @@ resource appInsightsDiagnostics 'Microsoft.ApiManagement/service/diagnostics@201
       percentage: 100
       samplingType: 'fixed'
     }
+  }
+}
+
+module accounting 'apim.accounting.bicep' = {
+  name: '${apimName}--accounting'
+  dependsOn: [
+    apimResource
+  ]
+  params: {
+    apimName: apimName
+  }
+}
+
+module makeline 'apim.makeline.bicep' = {
+  name: '${apimName}--makeline'
+  dependsOn: [
+    apimResource
+  ]
+  params: {
+    apimName: apimName
+  }
+}
+
+module order 'apim.order.bicep' = {
+  name: '${apimName}--order'
+  dependsOn: [
+    apimResource
+  ]
+  params: {
+    apimName: apimName
   }
 }
 

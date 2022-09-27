@@ -23,6 +23,7 @@ param sqlAdminLogin string = 'reddog'
 @secure()
 param sqlAdminLoginPassword string = take(newGuid(), 16)
 param appServicePlanName string = 'asp-${uniqueSuffix}'
+param funcServicePlanName string = 'fsp-${uniqueSuffix}'
 param registryName string = 'acr${replace(uniqueSuffix, '-', '')}'
 param uiServiceName string = 'ui-${uniqueSuffix}'
 param virtualCustomerName string = 'vc-${uniqueSuffix}'
@@ -118,6 +119,20 @@ module appServicePlan 'modules/asp.bicep' = {
     location: location
     appServicePlanName: appServicePlanName
     logAnalyticsWorkspaceName: logAnalyticsWorkspaceName
+    sku: 'S1'
+    kind: 'linux'
+  }
+}
+
+module funcServicePlan 'modules/asp.bicep' = {
+  name: '${deployment().name}--func-service-plan'
+  scope: resourceGroup
+  params: {
+    location: location
+    appServicePlanName: funcServicePlanName
+    logAnalyticsWorkspaceName: logAnalyticsWorkspaceName
+    sku: 'EP1'
+    kind: 'elastic'
   }
 }
 
@@ -333,18 +348,19 @@ module virtualCustomerModule 'modules/functions.bicep' = {
   name: '${deployment().name}--virtual-customer'
   scope: resourceGroup
   dependsOn: [
-    appServicePlan
+    funcServicePlan
     insightsModule
     registryModule
     apimModule
+    storageModule
   ]
   params: {
     location: location
     functionName: virtualCustomerName
-    serverFarmId: appServicePlan.outputs.id
-    storageAccountAddress: storageModule.outputs.address
+    serverFarmId: funcServicePlan.outputs.id
     appInsightsName: appInsightsName
     registryName: registryName
+    storageAccountName: storageAccountName
   }
 }
 

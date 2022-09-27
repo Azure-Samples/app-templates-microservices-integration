@@ -1,10 +1,13 @@
 param functionName string
 param location string = resourceGroup().location // Location for all resources
 param serverFarmId string
-param storageAccountAddress string
+param storageAccountName string
 param appInsightsName string
 param registryName string
 
+resource storageAccount 'Microsoft.Storage/storageAccounts@2021-06-01' existing = {
+  name: storageAccountName
+}
 resource appInsights 'Microsoft.Insights/components@2020-02-02-preview' existing = {
   name: appInsightsName
 }
@@ -16,48 +19,21 @@ resource registry 'Microsoft.ContainerRegistry/registries@2021-06-01-preview' ex
 resource appService 'Microsoft.Web/sites@2020-06-01' = {
   name: functionName
   location: location
-  kind: 'functionapp,linux'
+  kind: 'functionapp,linux,container'
   properties: {
     serverFarmId: serverFarmId
     siteConfig: {
-      appSettings: [
-        {
-            name: 'FUNCTIONS_EXTENSION_VERSION'
-            value: '~3'
-        }
-        {
-          name: 'DOCKER_REGISTRY_SERVER_URL'
-          value: registry.properties.loginServer
-        }
-        {
-          name: 'DOCKER_REGISTRY_SERVER_USERNAME'
-          value: registry.listCredentials().username
-        }
-        {
-          name: 'DOCKER_REGISTRY_SERVER_PASSWORD'
-          value: registry.listCredentials().passwords[0].value
-        }
-        {
-            name: 'WEBSITES_ENABLE_APP_SERVICE_STORAGE'
-            value: 'false'
-        }
-        {
-          name: 'AzureWebJobsStorage'
-          value: storageAccountAddress
-        }
-      ]
       cors: {
           allowedOrigins: [
               'https://portal.azure.com'
           ]
       }
-      linuxFxVersion: 'DOCKER|${registry.properties.loginServer}/${functionName}:latest'
-      alwaysOn: true
+      linuxFxVersion: 'DOCKER|${registry.properties.loginServer}/reddog/${functionName}:latest'
     }
   }
 }
 
-resource appServiceLogging 'Microsoft.Web/sites/config@2020-06-01' = {
+resource appServiceAppSettings 'Microsoft.Web/sites/config@2020-06-01' = {
   parent: appService
   name: 'appsettings'
   properties: {
@@ -65,15 +41,26 @@ resource appServiceLogging 'Microsoft.Web/sites/config@2020-06-01' = {
     APPLICATIONINSIGHTS_CONNECTION_STRING: appInsights.properties.ConnectionString
     ApplicationInsightsAgent_EXTENSION_VERSION: '~3'
     XDT_MicrosoftApplicationInsights_Mode: 'Recommended'
+    FUNCTIONS_EXTENSION_VERSION: '~3'
+    DOCKER_REGISTRY_SERVER_URL: registry.properties.loginServer
+    DOCKER_REGISTRY_SERVER_USERNAME: registry.listCredentials().username
+    DOCKER_REGISTRY_SERVER_PASSWORD: registry.listCredentials().passwords[0].value
+    AzureWebJobsStorage: 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
+    WEBSITE_CONTENTAZUREFILECONNECTIONSTRING: 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
+    WEBSITE_CONTENTSHARE: toLower(functionName)
+    WEBSITES_ENABLE_APP_SERVICE_STORAGE: 'false'
   }
   dependsOn: [
     appInsights
   ]
 }
 
-resource appServiceAppSettings 'Microsoft.Web/sites/config@2020-06-01' = {
+resource appServiceLogging 'Microsoft.Web/sites/config@2020-06-01' = {
   parent: appService
   name: 'logs'
+  dependsOn: [
+    appServiceAppSettings
+  ]
   properties: {
     applicationLogs: {
       fileSystem: {
