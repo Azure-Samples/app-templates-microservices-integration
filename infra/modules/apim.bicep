@@ -40,6 +40,7 @@ resource apimResource 'Microsoft.ApiManagement/service@2020-12-01' = {
     publisherName: publisherName
   }
 }
+
 resource apimPolicy 'Microsoft.ApiManagement/service/policies@2021-12-01-preview' = {
   name: 'policy'
   parent: apimResource
