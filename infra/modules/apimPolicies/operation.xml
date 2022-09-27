@@ -1,0 +1,33 @@
+<policies>
+    <inbound>
+        <base />
+        <set-method>{method}</set-method>
+        <rewrite-uri id="apim-generated-policy" template="{template}" />
+        <set-header id="apim-generated-policy" name="Ocp-Apim-Subscription-Key" exists-action="delete" />
+        <!-- The following cache policy snippets demonstrate how to control API Management response cache duration with Cache-Control headers sent by the backend service. -->
+        <cache-lookup vary-by-developer="false" vary-by-developer-groups="false" must-revalidate="true" downstream-caching-type="public">
+            <vary-by-header>Accept</vary-by-header>
+            <vary-by-header>Accept-Charset</vary-by-header>
+        </cache-lookup>
+    </inbound>
+    <backend>
+        <base />
+    </backend>
+    <outbound>
+        <base />
+        <!-- https://learn.microsoft.com/en-us/azure/api-management/policies/set-cache-duration -->
+        <!-- The following policy can be tested by setting up an API and operation mapped to GET http://httpbin.org/cache/{duration} -->
+        <!-- Copy this snippet into the outbound section. Note that cache duration is set to the max-age value provided in the Cache-Control header received from the backend service or to the default value of 5 min if none is found  -->
+        <!--
+        <cache-store duration="@{
+            var header = context.Response.Headers.GetValueOrDefault('Cache-Control','');
+            var maxAge = Regex.Match(header, @"max-age=(?<maxAge>\d+)").Groups["maxAge"]?.Value;
+            return (!string.IsNullOrEmpty(maxAge))?int.Parse(maxAge):300;
+        }" />
+        -->
+        <cache-store duration="300" />
+</outbound>
+    <on-error>
+        <base />
+    </on-error>
+</policies>

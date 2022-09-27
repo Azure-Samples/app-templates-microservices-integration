@@ -120,6 +120,7 @@ module appServicePlan 'modules/asp.bicep' = {
     appServicePlanName: appServicePlanName
     logAnalyticsWorkspaceName: logAnalyticsWorkspaceName
     sku: 'S1'
+    kind: 'linux'
   }
 }
 
@@ -131,6 +132,7 @@ module funcServicePlan 'modules/asp.bicep' = {
     appServicePlanName: funcServicePlanName
     logAnalyticsWorkspaceName: logAnalyticsWorkspaceName
     sku: 'EP1'
+    kind: 'elastic'
   }
 }
 
