@@ -4,6 +4,8 @@ param serverFarmId string
 param storageAccountName string
 param appInsightsName string
 param registryName string
+param imageName string
+param apimName string
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2021-06-01' existing = {
   name: storageAccountName
@@ -17,6 +19,10 @@ resource registry 'Microsoft.ContainerRegistry/registries@2021-06-01-preview' ex
   name: registryName
 }
 
+resource apimResource 'Microsoft.ApiManagement/service@2020-12-01' existing = {
+  name: apimName
+}
+
 resource appService 'Microsoft.Web/sites@2020-06-01' = {
   name: functionName
   location: location
@@ -24,52 +30,17 @@ resource appService 'Microsoft.Web/sites@2020-06-01' = {
   properties: {
     serverFarmId: serverFarmId
     siteConfig: {
-      appSettings: [
-        {
-            name: 'FUNCTIONS_EXTENSION_VERSION'
-            value: '~3'
-        }
-        {
-          name: 'DOCKER_REGISTRY_SERVER_URL'
-          value: registry.properties.loginServer
-        }
-        {
-          name: 'DOCKER_REGISTRY_SERVER_USERNAME'
-          value: registry.listCredentials().username
-        }
-        {
-          name: 'DOCKER_REGISTRY_SERVER_PASSWORD'
-          value: registry.listCredentials().passwords[0].value
-        }
-        {
-          name: 'AzureWebJobsStorage'
-          value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
-        }
-        {
-          name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
-          value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
-        }
-        {
-          name: 'WEBSITE_CONTENTSHARE'
-          value: toLower(functionName)
-        }
-        {
-            name: 'WEBSITES_ENABLE_APP_SERVICE_STORAGE'
-            value: 'false'
-        }
-      ]
       cors: {
           allowedOrigins: [
               'https://portal.azure.com'
           ]
       }
-      linuxFxVersion: 'DOCKER|${registry.properties.loginServer}/reddog/${functionName}:latest'
-      alwaysOn: true
+      linuxFxVersion: 'DOCKER|${registry.properties.loginServer}/reddog/${imageName}:latest'
     }
   }
 }
 
-resource appServiceLogging 'Microsoft.Web/sites/config@2020-06-01' = {
+resource appServiceAppSettings 'Microsoft.Web/sites/config@2020-06-01' = {
   parent: appService
   name: 'appsettings'
   properties: {
@@ -77,15 +48,27 @@ resource appServiceLogging 'Microsoft.Web/sites/config@2020-06-01' = {
     APPLICATIONINSIGHTS_CONNECTION_STRING: appInsights.properties.ConnectionString
     ApplicationInsightsAgent_EXTENSION_VERSION: '~3'
     XDT_MicrosoftApplicationInsights_Mode: 'Recommended'
+    FUNCTIONS_EXTENSION_VERSION: '~3'
+    DOCKER_REGISTRY_SERVER_URL: registry.properties.loginServer
+    DOCKER_REGISTRY_SERVER_USERNAME: registry.listCredentials().username
+    DOCKER_REGISTRY_SERVER_PASSWORD: registry.listCredentials().passwords[0].value
+    AzureWebJobsStorage: 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
+    WEBSITE_CONTENTAZUREFILECONNECTIONSTRING: 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
+    WEBSITE_CONTENTSHARE: toLower(functionName)
+    WEBSITES_ENABLE_APP_SERVICE_STORAGE: 'false'
+    ORDER_SERVICE_URL: '${apimResource.properties.gatewayUrl}/order/'
   }
   dependsOn: [
     appInsights
   ]
 }
 
-resource appServiceAppSettings 'Microsoft.Web/sites/config@2020-06-01' = {
+resource appServiceLogging 'Microsoft.Web/sites/config@2020-06-01' = {
   parent: appService
   name: 'logs'
+  dependsOn: [
+    appServiceAppSettings
+  ]
   properties: {
     applicationLogs: {
       fileSystem: {

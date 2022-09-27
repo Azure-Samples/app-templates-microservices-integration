@@ -120,7 +120,6 @@ module appServicePlan 'modules/asp.bicep' = {
     appServicePlanName: appServicePlanName
     logAnalyticsWorkspaceName: logAnalyticsWorkspaceName
     sku: 'S1'
-    kind: 'linux'
   }
 }
 
@@ -132,7 +131,6 @@ module funcServicePlan 'modules/asp.bicep' = {
     appServicePlanName: funcServicePlanName
     logAnalyticsWorkspaceName: logAnalyticsWorkspaceName
     sku: 'EP1'
-    kind: 'elastic'
   }
 }
 
@@ -360,7 +358,9 @@ module virtualCustomerModule 'modules/functions.bicep' = {
     serverFarmId: funcServicePlan.outputs.id
     appInsightsName: appInsightsName
     registryName: registryName
+    imageName: 'virtual-customer'
     storageAccountName: storageAccountName
+    apimName: apimName
   }
 }
 
@@ -379,6 +379,7 @@ module uiModule 'modules/appservice.bicep' = {
     serverFarmId: appServicePlan.outputs.id
     appInsightsName: appInsightsName
     registryName: registryName
+    imageName: 'ui'
     apimName: apimName
     vueConfig: true
   }
