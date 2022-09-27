@@ -10,7 +10,7 @@
 -->
 <policies>
     <inbound>
-        <rate-limit-by-key  calls="10"
+        <rate-limit-by-key  calls="1000"
               renewal-period="60"
               increment-condition="@(context.Response.StatusCode == 200)"
               counter-key="@(context.Request.IpAddress)"
