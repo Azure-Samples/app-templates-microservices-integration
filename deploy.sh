@@ -9,8 +9,8 @@ $REGISTRY=acrreddog$CODE
 az deployment sub create --location $LOCATION --template-file ./infra/main.bicep --parameters name=$NAME --parameters location=$LOCATION --parameters uniqueSuffix=$SUFFIX
 
 $REGISTRY_URL=https://${REGISTRY}.azurecr.io
-$REGISTRY_USERNAME=$(az acr credential show --name $REGISTRY --query username)
-$REGISTRY_PASSWORD=$(az acr credential show --name $REGISTRY --query passwords[0].value)
+$REGISTRY_USERNAME=$(az acr credential show --name $REGISTRY --query username | xargs)
+$REGISTRY_PASSWORD=$(az acr credential show --name $REGISTRY --query passwords[0].value | xargs)
 
 # build solution
 cd ./src && dotnet restore && dotnet build && cd ../
