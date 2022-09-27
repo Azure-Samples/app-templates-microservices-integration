@@ -21,8 +21,12 @@
 		"ms-azuretools.vscode-dapr",
 		"ms-azuretools.vscode-docker",
 		"ms-azuretools.vscode-bicep",
+		"ms-azuretools.vscode-azurefunctions",
+		"ms-vscode.azure-account",
+		"ms-azuretools.vscode-azureresourcegroups",
 		"ms-dotnettools.csharp",
-		"humao.rest-client"
+		"humao.rest-client",
+		"azurite.azurite"
 	],
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.

@@ -4,16 +4,23 @@ param serverFarmId string
 param storageAccountName string
 param appInsightsName string
 param registryName string
+param imageName string
+param apimName string
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2021-06-01' existing = {
   name: storageAccountName
 }
+
 resource appInsights 'Microsoft.Insights/components@2020-02-02-preview' existing = {
   name: appInsightsName
 }
 
 resource registry 'Microsoft.ContainerRegistry/registries@2021-06-01-preview' existing = {
   name: registryName
+}
+
+resource apimResource 'Microsoft.ApiManagement/service@2020-12-01' existing = {
+  name: apimName
 }
 
 resource appService 'Microsoft.Web/sites@2020-06-01' = {
@@ -28,7 +35,7 @@ resource appService 'Microsoft.Web/sites@2020-06-01' = {
               'https://portal.azure.com'
           ]
       }
-      linuxFxVersion: 'DOCKER|${registry.properties.loginServer}/reddog/${functionName}:latest'
+      linuxFxVersion: 'DOCKER|${registry.properties.loginServer}/reddog/${imageName}:latest'
     }
   }
 }
@@ -49,6 +56,7 @@ resource appServiceAppSettings 'Microsoft.Web/sites/config@2020-06-01' = {
     WEBSITE_CONTENTAZUREFILECONNECTIONSTRING: 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
     WEBSITE_CONTENTSHARE: toLower(functionName)
     WEBSITES_ENABLE_APP_SERVICE_STORAGE: 'false'
+    ORDER_SERVICE_URL: '${apimResource.properties.gatewayUrl}/order/'
   }
   dependsOn: [
     appInsights

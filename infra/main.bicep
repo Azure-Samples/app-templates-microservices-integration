@@ -360,7 +360,9 @@ module virtualCustomerModule 'modules/functions.bicep' = {
     serverFarmId: funcServicePlan.outputs.id
     appInsightsName: appInsightsName
     registryName: registryName
+    imageName: 'virtual-customer'
     storageAccountName: storageAccountName
+    apimName: apimName
   }
 }
 
@@ -379,6 +381,7 @@ module uiModule 'modules/appservice.bicep' = {
     serverFarmId: appServicePlan.outputs.id
     appInsightsName: appInsightsName
     registryName: registryName
+    imageName: 'ui'
     apimName: apimName
     vueConfig: true
   }

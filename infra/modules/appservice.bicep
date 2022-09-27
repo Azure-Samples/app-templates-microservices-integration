@@ -3,6 +3,7 @@ param location string = resourceGroup().location // Location for all resources
 param serverFarmId string
 param appInsightsName string
 param registryName string
+param imageName string
 param apimName string
 param vueConfig bool = false
 
@@ -29,17 +30,16 @@ resource appService 'Microsoft.Web/sites@2020-06-01' = {
       appSettings: [
         {
           name: 'DOCKER_REGISTRY_SERVER_URL'
-          //value: registry.properties.loginServer
-          value: 'https://ghcr.io'
+          value: registry.properties.loginServer
         }
-        /*{
+        {
           name: 'DOCKER_REGISTRY_SERVER_USERNAME'
           value: registry.listCredentials().username
         }
         {
           name: 'DOCKER_REGISTRY_SERVER_PASSWORD'
           value: registry.listCredentials().passwords[0].value
-        }*/
+        }
         {
           name: 'WEBSITES_ENABLE_APP_SERVICE_STORAGE'
           value: 'false'
@@ -61,8 +61,7 @@ resource appService 'Microsoft.Web/sites@2020-06-01' = {
           value: 'Recommended'
         }
       ]
-      //linuxFxVersion: 'DOCKER|${registry.properties.loginServer}/${webAppName}:latest'
-      linuxFxVersion: 'DOCKER|ghcr.io/azure/reddog-retail-demo/reddog-retail-ui:latest'
+      linuxFxVersion: 'DOCKER|${registry.properties.loginServer}/${imageName}:latest'
       minTlsVersion: '1.2'
     }
   }
@@ -92,13 +91,12 @@ resource appServiceLogging 'Microsoft.Web/sites/config@2020-06-01' = {
   }
 }
 
-
 resource appServiceAppSettings 'Microsoft.Web/sites/config@2020-06-01' = if (vueConfig) {
   parent: appService
   name: 'appsettings'
   properties: {
-    VUE_APP_MAKELINE_BASE_URL: apimResource.properties.gatewayUrl
-    VUE_APP_ACCOUNTING_BASE_URL: apimResource.properties.gatewayUrl
+    VUE_APP_MAKELINE_BASE_URL: '${apimResource.properties.gatewayUrl}/makeline/'
+    VUE_APP_ACCOUNTING_BASE_URL: '${apimResource.properties.gatewayUrl}/accounting/'
   }
   dependsOn: [
     apimResource
