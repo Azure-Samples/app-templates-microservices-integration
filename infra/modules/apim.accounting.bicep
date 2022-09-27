@@ -41,7 +41,7 @@ resource accountingApiPolicy 'Microsoft.ApiManagement/service/apis/policies@2021
   name: 'policy'
   parent: accountingApiResource
   properties: {
-    value: '<policies>\r\n  <inbound>\r\n    <base />\r\n    <set-backend-service id="apim-generated-policy" backend-id="${accountingBackendResource.name}" />\r\n  </inbound>\r\n  <backend>\r\n    <base />\r\n  </backend>\r\n  <outbound>\r\n    <base />\r\n  </outbound>\r\n  <on-error>\r\n    <base />\r\n  </on-error>\r\n</policies>'
+    value: replace(loadTextContent('apimPolicies/api.xml'), '{backendName}', accountingBackendResource.name)
     format: 'xml'
   }
 }
@@ -117,7 +117,7 @@ resource getOrderMetricsPolicy 'Microsoft.ApiManagement/service/apis/operations/
   name: 'policy'
   parent: orderMetricsOperationResource
   properties: {
-    value: '<policies>\r\n  <inbound>\r\n    <base />\r\n    <set-method>GET</set-method>\r\n    <rewrite-uri id="apim-generated-policy" template="/OrderMetrics" />\r\n    <set-header id="apim-generated-policy" name="Ocp-Apim-Subscription-Key" exists-action="delete" />\r\n  </inbound>\r\n  <backend>\r\n    <base />\r\n  </backend>\r\n  <outbound>\r\n    <base />\r\n  </outbound>\r\n  <on-error>\r\n    <base />\r\n  </on-error>\r\n</policies>'
+    value: replace(replace(loadTextContent('apimPolicies/operation.xml'), '{method}', 'GET'), '{template}', '/OrderMetrics')
     format: 'xml'
   }
 }
@@ -173,7 +173,7 @@ resource getOrdersPeriodPolicy 'Microsoft.ApiManagement/service/apis/operations/
   name: 'policy'
   parent: getOrdersPeriodOperation
   properties: {
-    value: '<policies>\r\n  <inbound>\r\n    <base />\r\n    <set-method>GET</set-method>\r\n    <rewrite-uri id="apim-generated-policy" template="/Orders/{period}/{timeSpan}" />\r\n    <set-header id="apim-generated-policy" name="Ocp-Apim-Subscription-Key" exists-action="delete" />\r\n  </inbound>\r\n  <backend>\r\n    <base />\r\n  </backend>\r\n  <outbound>\r\n    <base />\r\n  </outbound>\r\n  <on-error>\r\n    <base />\r\n  </on-error>\r\n</policies>'
+    value: replace(replace(loadTextContent('apimPolicies/operation.xml'), '{method}', 'GET'), '{template}', '/Orders/{period}/{timeSpan}')
     format: 'xml'
   }
 }
@@ -243,7 +243,7 @@ resource getSalesProfitPerStorePolicy 'Microsoft.ApiManagement/service/apis/oper
   name: 'policy'
   parent: getSalesProfitPerStoreOperation
   properties: {
-    value: '<policies>\r\n  <inbound>\r\n    <base />\r\n    <set-method>GET</set-method>\r\n    <rewrite-uri id="apim-generated-policy" template="/Corp/SalesProfit/PerStore" />\r\n    <set-header id="apim-generated-policy" name="Ocp-Apim-Subscription-Key" exists-action="delete" />\r\n  </inbound>\r\n  <backend>\r\n    <base />\r\n  </backend>\r\n  <outbound>\r\n    <base />\r\n  </outbound>\r\n  <on-error>\r\n    <base />\r\n  </on-error>\r\n</policies>'
+    value: replace(replace(loadTextContent('apimPolicies/operation.xml'), '{method}', 'GET'), '{template}', '/Corp/SalesProfit/PerStore')
     format: 'xml'
   }
 }
@@ -313,7 +313,7 @@ resource getSalesProfitTotalPolicy 'Microsoft.ApiManagement/service/apis/operati
   name: 'policy'
   parent: getSalesProfitTotalOperation
   properties: {
-    value: '<policies>\r\n  <inbound>\r\n    <base />\r\n    <set-method>GET</set-method>\r\n    <rewrite-uri id="apim-generated-policy" template="/Corp/SalesProfit/Total" />\r\n    <set-header id="apim-generated-policy" name="Ocp-Apim-Subscription-Key" exists-action="delete" />\r\n  </inbound>\r\n  <backend>\r\n    <base />\r\n  </backend>\r\n  <outbound>\r\n    <base />\r\n  </outbound>\r\n  <on-error>\r\n    <base />\r\n  </on-error>\r\n</policies>'
+    value: replace(replace(loadTextContent('apimPolicies/operation.xml'), '{method}', 'GET'), '{template}', '/Corp/SalesProfit/Total')
     format: 'xml'
   }
 }
@@ -367,7 +367,7 @@ resource getCorpStoresPolicy 'Microsoft.ApiManagement/service/apis/operations/po
   name: 'policy'
   parent: getCorpStoresOperation
   properties: {
-    value: '<policies>\r\n  <inbound>\r\n    <base />\r\n    <set-method>GET</set-method>\r\n    <rewrite-uri id="apim-generated-policy" template="/Corp/Stores" />\r\n    <set-header id="apim-generated-policy" name="Ocp-Apim-Subscription-Key" exists-action="delete" />\r\n  </inbound>\r\n  <backend>\r\n    <base />\r\n  </backend>\r\n  <outbound>\r\n    <base />\r\n  </outbound>\r\n  <on-error>\r\n    <base />\r\n  </on-error>\r\n</policies>'
+    value: replace(replace(loadTextContent('apimPolicies/operation.xml'), '{method}', 'GET'), '{template}', '/Corp/Stores')
     format: 'xml'
   }
 }

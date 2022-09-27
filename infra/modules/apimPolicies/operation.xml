@@ -1,0 +1,17 @@
+<policies>
+    <inbound>
+        <base />
+        <set-method>{method}</set-method>
+        <rewrite-uri id="apim-generated-policy" template="{template}" />
+        <set-header id="apim-generated-policy" name="Ocp-Apim-Subscription-Key" exists-action="delete" />
+    </inbound>
+    <backend>
+        <base />
+    </backend>
+    <outbound>
+        <base />
+    </outbound>
+    <on-error>
+        <base />
+    </on-error>
+</policies>

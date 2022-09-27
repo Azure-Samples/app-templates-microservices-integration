@@ -41,7 +41,7 @@ resource orderApiPolicy 'Microsoft.ApiManagement/service/apis/policies@2021-12-0
   name: 'policy'
   parent: orderApiResource
   properties: {
-    value: '<policies>\r\n  <inbound>\r\n    <base />\r\n    <set-backend-service id="apim-generated-policy" backend-id="${orderBackendResource.name}" />\r\n  </inbound>\r\n  <backend>\r\n    <base />\r\n  </backend>\r\n  <outbound>\r\n    <base />\r\n  </outbound>\r\n  <on-error>\r\n    <base />\r\n  </on-error>\r\n</policies>'
+    value: replace(loadTextContent('apimPolicies/api.xml'), '{backendName}', orderBackendResource.name)
     format: 'xml'
   }
 }
@@ -105,7 +105,7 @@ resource getProductsPolicy 'Microsoft.ApiManagement/service/apis/operations/poli
   name: 'policy'
   parent: getProductsOperation
   properties: {
-    value: '<policies>\r\n  <inbound>\r\n    <base />\r\n    <set-method>GET</set-method>\r\n    <rewrite-uri id="apim-generated-policy" template="/product" />\r\n    <set-header id="apim-generated-policy" name="Ocp-Apim-Subscription-Key" exists-action="delete" />\r\n  </inbound>\r\n  <backend>\r\n    <base />\r\n  </backend>\r\n  <outbound>\r\n    <base />\r\n  </outbound>\r\n  <on-error>\r\n    <base />\r\n  </on-error>\r\n</policies>'
+    value: replace(replace(loadTextContent('apimPolicies/operation.xml'), '{method}', 'GET'), '{template}', '/product')
     format: 'xml'
   }
 }
@@ -172,7 +172,7 @@ resource postOrderPolicy 'Microsoft.ApiManagement/service/apis/operations/polici
   name: 'policy'
   parent: postOrderOperation
   properties: {
-    value: '<policies>\r\n  <inbound>\r\n    <base />\r\n    <set-method>GET</set-method>\r\n    <rewrite-uri id="apim-generated-policy" template="/order" />\r\n    <set-header id="apim-generated-policy" name="Ocp-Apim-Subscription-Key" exists-action="delete" />\r\n  </inbound>\r\n  <backend>\r\n    <base />\r\n  </backend>\r\n  <outbound>\r\n    <base />\r\n  </outbound>\r\n  <on-error>\r\n    <base />\r\n  </on-error>\r\n</policies>'
+    value: replace(replace(loadTextContent('apimPolicies/operation.xml'), '{method}', 'POST'), '{template}', '/order')
     format: 'xml'
   }
 }

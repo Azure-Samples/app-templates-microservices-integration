@@ -41,7 +41,7 @@ resource makelineApiPolicy 'Microsoft.ApiManagement/service/apis/policies@2021-1
   name: 'policy'
   parent: makelineApiResource
   properties: {
-    value: '<policies>\r\n  <inbound>\r\n    <base />\r\n    <set-backend-service id="apim-generated-policy" backend-id="${makelineBackendResource.name}" />\r\n  </inbound>\r\n  <backend>\r\n    <base />\r\n  </backend>\r\n  <outbound>\r\n    <base />\r\n  </outbound>\r\n  <on-error>\r\n    <base />\r\n  </on-error>\r\n</policies>'
+    value: replace(loadTextContent('apimPolicies/api.xml'), '{backendName}', makelineBackendResource.name)
     format: 'xml'
   }
 }
@@ -73,7 +73,7 @@ resource getOrdersPolicy 'Microsoft.ApiManagement/service/apis/operations/polici
   name: 'policy'
   parent: getOrdersOperationResource
   properties: {
-    value: '<policies>\r\n  <inbound>\r\n    <base />\r\n    <set-method>GET</set-method>\r\n    <rewrite-uri id="apim-generated-policy" template="/orders/{storeId}" />\r\n    <set-header id="apim-generated-policy" name="Ocp-Apim-Subscription-Key" exists-action="delete" />\r\n  </inbound>\r\n  <backend>\r\n    <base />\r\n  </backend>\r\n  <outbound>\r\n    <base />\r\n  </outbound>\r\n  <on-error>\r\n    <base />\r\n  </on-error>\r\n</policies>'
+    value: replace(replace(loadTextContent('apimPolicies/operation.xml'), '{method}', 'GET'), '{template}', '/orders/{storeId}')
     format: 'xml'
   }
 }
