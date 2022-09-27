@@ -1,16 +1,28 @@
-#! /bin/sh
-$NAME=test
-$LOCATION=eastus2
-$CODE=6a034c03
-$SUFFIX=reddog-$CODE
-$REGISTRY=acrreddog$CODE
+#! /bin/bash
+
+while getopts n:l:c: flag
+do
+    case "${flag}" in
+        n) NAME=${OPTARG};;
+        l) LOCATION=${OPTARG};;
+        c) CODE=${OPTARG};;
+    esac
+done
+
+if [ "$NAME" == "" ] || [ "$LOCATION" == "" ] || [ "$CODE" == "" ]; then
+ echo "Syntax: $0 -n <name> -l <location> -c <unique code>"
+ exit 1;
+fi
+
+SUFFIX=reddog-$CODE
+REGISTRY=acrreddog$CODE
 
 # provision infrastructure
 az deployment sub create --location $LOCATION --template-file ./infra/main.bicep --parameters name=$NAME --parameters location=$LOCATION --parameters uniqueSuffix=$SUFFIX
 
-$REGISTRY_URL=https://${REGISTRY}.azurecr.io
-$REGISTRY_USERNAME=$(az acr credential show --name $REGISTRY --query username | xargs)
-$REGISTRY_PASSWORD=$(az acr credential show --name $REGISTRY --query passwords[0].value | xargs)
+REGISTRY_URL=https://${REGISTRY}.azurecr.io
+REGISTRY_USERNAME=$(az acr credential show --name $REGISTRY --query username | xargs)
+REGISTRY_PASSWORD=$(az acr credential show --name $REGISTRY --query passwords[0].value | xargs)
 
 # build solution
 cd ./src && dotnet restore && dotnet build && cd ../
