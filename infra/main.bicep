@@ -221,6 +221,7 @@ module orderServiceModule 'modules/containerApps/order.bicep' = {
   params: {
     location: location
     containerAppsEnvName: containerAppsEnvName
+    registryName: registryName
   }
 }
 
@@ -238,6 +239,7 @@ module makeLineServiceModule 'modules/containerApps/makeline.bicep' = {
     location: location
     containerAppsEnvName: containerAppsEnvName
     serviceBusNamespaceName: serviceBusNamespaceName
+    registryName: registryName
   }
 }
 
@@ -254,6 +256,7 @@ module loyaltyServiceModule 'modules/containerApps/loyalty.bicep' = {
     location: location
     containerAppsEnvName: containerAppsEnvName
     serviceBusNamespaceName: serviceBusNamespaceName
+    registryName: registryName
   }
 }
 
@@ -270,6 +273,7 @@ module receiptGenerationServiceModule 'modules/containerApps/receipt.bicep' = {
     location: location
     containerAppsEnvName: containerAppsEnvName
     serviceBusNamespaceName: serviceBusNamespaceName
+    registryName: registryName
   }
 }
 
@@ -284,6 +288,7 @@ module virtualWorkerModule 'modules/containerApps/virtualWorker.bicep' = {
   params: {
     location: location
     containerAppsEnvName: containerAppsEnvName
+    registryName: registryName
   }
 }
 
@@ -298,6 +303,7 @@ module bootstrapperModule 'modules/containerApps/bootstrapper.bicep' = {
   params: {
     location: location
     containerAppsEnvName: containerAppsEnvName
+    registryName: registryName
     sqlDatabaseName: sqlDatabaseName
     sqlServerName: sqlServerName
     sqlAdminLogin: sqlAdminLogin
@@ -318,6 +324,7 @@ module accountingServiceModule 'modules/containerApps/accounting.bicep' = {
   params: {
     location: location
     containerAppsEnvName: containerAppsEnvName
+    registryName: registryName
     serviceBusNamespaceName: serviceBusNamespaceName
     sqlServerName: sqlServerName
     sqlDatabaseName: sqlDatabaseName
