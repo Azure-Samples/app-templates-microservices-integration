@@ -16,16 +16,17 @@ fi
 
 SUFFIX=reddog-$CODE
 REGISTRY=acrreddog$CODE
+GROUP=${NAME}-${SUFFIX}
 
 ################################################## 
 ### CREATE REGISTRY
 ##################################################
 
 # create resource group
-az group create --name ${NAME}-${SUFFIX} --location $LOCATION
+az group create --name $GROUP --location $LOCATION
 
 # create container registry
-az acr create --resource-group ${NAME}-${SUFFIX} --name $REGISTRY --sku Basic --admin-enabled true
+az acr create --resource-group $GROUP --name $REGISTRY --sku Basic --admin-enabled true
 
 # retrieve registry credentials
 REGISTRY_URL=https://${REGISTRY}.azurecr.io
@@ -81,31 +82,31 @@ az deployment sub create --location $LOCATION --template-file ./infra/main.bicep
 ##################################################
 
 # deploy accounting service image
-# az containerapp up --name accounting-service --resource-group ${NAME}-${SUFFIX} --image ${REGISTRY}.azurecr.io/reddog/accounting-service:latest
+# az containerapp up --name accounting-service --resource-group $GROUP --image ${REGISTRY}.azurecr.io/reddog/accounting-service:latest
 
 # deploy bootstrapper image
-# az containerapp up --name bootstrapper --resource-group ${NAME}-${SUFFIX} --image ${REGISTRY}.azurecr.io/reddog/bootstrapper:latest
+# az containerapp up --name bootstrapper --resource-group $GROUP --image ${REGISTRY}.azurecr.io/reddog/bootstrapper:latest
 
 # deploy corporate transfer service image
-# az containerapp up --name corporate-transfer --resource-group ${NAME}-${SUFFIX} --image ${REGISTRY}.azurecr.io/reddog/corporate-transfer:latest
+# az containerapp up --name corporate-transfer --resource-group $GROUP --image ${REGISTRY}.azurecr.io/reddog/corporate-transfer:latest
 
 # deploy loyalty service image
-# az containerapp up --name loyalty-service --resource-group ${NAME}-${SUFFIX} --image ${REGISTRY}.azurecr.io/reddog/loyalty-service:latest
+# az containerapp up --name loyalty-service --resource-group $GROUP --image ${REGISTRY}.azurecr.io/reddog/loyalty-service:latest
 
 # deploy makeline service image
-# az containerapp up --name make-line-service --resource-group ${NAME}-${SUFFIX} --image ${REGISTRY}.azurecr.io/reddog/make-line:latest
+# az containerapp up --name make-line-service --resource-group $GROUP --image ${REGISTRY}.azurecr.io/reddog/make-line:latest
 
 # deploy order service image
-# az containerapp up --name order-service --resource-group ${NAME}-${SUFFIX} --image ${REGISTRY}.azurecr.io/reddog/order-service:latest
+# az containerapp up --name order-service --resource-group $GROUP --image ${REGISTRY}.azurecr.io/reddog/order-service:latest
 
 # deploy receipt service image
-# az containerapp up --name receipt-service --resource-group ${NAME}-${SUFFIX} --image ${REGISTRY}.azurecr.io/reddog/receipt-service:latest
+# az containerapp up --name receipt-service --resource-group $GROUP --image ${REGISTRY}.azurecr.io/reddog/receipt-service:latest
 
 # deploy UI image
-# az webapp config container set --name ui-${SUFFIX} --resource-group ${NAME}-${SUFFIX} --docker-custom-image-name ${REGISTRY}.azurecr.io/reddog/ui:latest --docker-registry-server-url $REGISTRY_URL --docker-registry-server-user $REGISTRY_USERNAME --docker-registry-server-password $REGISTRY_PASSWORD
+# az webapp config container set --name ui-${SUFFIX} --resource-group $GROUP --docker-custom-image-name ${REGISTRY}.azurecr.io/reddog/ui:latest --docker-registry-server-url $REGISTRY_URL --docker-registry-server-user $REGISTRY_USERNAME --docker-registry-server-password $REGISTRY_PASSWORD
 
 # deploy Virtual Customer image
-# az functionapp config container set --name vc-${SUFFIX} --resource-group ${NAME}-${SUFFIX} --docker-custom-image-name ${REGISTRY}.azurecr.io/reddog/virtual-customer:latest --docker-registry-server-url $REGISTRY_URL --docker-registry-server-user $REGISTRY_USERNAME --docker-registry-server-password $REGISTRY_PASSWORD
+# az functionapp config container set --name vc-${SUFFIX} --resource-group $GROUP --docker-custom-image-name ${REGISTRY}.azurecr.io/reddog/virtual-customer:latest --docker-registry-server-url $REGISTRY_URL --docker-registry-server-user $REGISTRY_USERNAME --docker-registry-server-password $REGISTRY_PASSWORD
 
 # deploy virtual worker image
-# az containerapp up --name virtual-worker --resource-group ${NAME}-${SUFFIX} --image ${REGISTRY}.azurecr.io/reddog/virtual-worker:latest 
+# az containerapp up --name virtual-worker --resource-group $GROUP --image ${REGISTRY}.azurecr.io/reddog/virtual-worker:latest 
