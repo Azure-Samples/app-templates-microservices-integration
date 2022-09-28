@@ -390,7 +390,6 @@ module uiModule 'modules/appservice.bicep' = {
     registryName: registryName
     imageName: 'ui'
     apimName: apimName
-    vueConfig: true
   }
 }
 

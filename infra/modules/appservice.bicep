@@ -5,7 +5,6 @@ param appInsightsName string
 param registryName string
 param imageName string
 param apimName string
-param vueConfig bool = false
 
 resource appInsights 'Microsoft.Insights/components@2020-02-02-preview' existing = {
   name: appInsightsName
@@ -27,44 +26,30 @@ resource appService 'Microsoft.Web/sites@2020-06-01' = {
     serverFarmId: serverFarmId
     httpsOnly: true
     siteConfig: {
-      appSettings: [
-        {
-          name: 'DOCKER_REGISTRY_SERVER_URL'
-          value: registry.properties.loginServer
-        }
-        {
-          name: 'DOCKER_REGISTRY_SERVER_USERNAME'
-          value: registry.listCredentials().username
-        }
-        {
-          name: 'DOCKER_REGISTRY_SERVER_PASSWORD'
-          value: registry.listCredentials().passwords[0].value
-        }
-        {
-          name: 'WEBSITES_ENABLE_APP_SERVICE_STORAGE'
-          value: 'false'
-        }
-        {
-          name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
-          value: appInsights.properties.InstrumentationKey
-        }
-        {
-          name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
-          value: appInsights.properties.ConnectionString
-        }
-        {
-          name: 'ApplicationInsightsAgent_EXTENSION_VERSION'
-          value: '~3'
-        }
-        {
-          name: 'XDT_MicrosoftApplicationInsights_Mode'
-          value: 'Recommended'
-        }
-      ]
       linuxFxVersion: 'DOCKER|${registry.properties.loginServer}/${imageName}:latest'
       minTlsVersion: '1.2'
     }
   }
+}
+
+resource appServiceAppSettings 'Microsoft.Web/sites/config@2020-06-01' = {
+  parent: appService
+  name: 'appsettings'
+  properties: {
+    APPINSIGHTS_INSTRUMENTATIONKEY: appInsights.properties.InstrumentationKey
+    APPLICATIONINSIGHTS_CONNECTION_STRING: appInsights.properties.ConnectionString
+    ApplicationInsightsAgent_EXTENSION_VERSION: '~3'
+    XDT_MicrosoftApplicationInsights_Mode: 'Recommended'
+    DOCKER_REGISTRY_SERVER_URL: registry.properties.loginServer
+    DOCKER_REGISTRY_SERVER_USERNAME: registry.listCredentials().username
+    DOCKER_REGISTRY_SERVER_PASSWORD: registry.listCredentials().passwords[0].value
+    WEBSITES_ENABLE_APP_SERVICE_STORAGE: 'false'
+    VUE_APP_MAKELINE_BASE_URL: '${apimResource.properties.gatewayUrl}/makeline/'
+    VUE_APP_ACCOUNTING_BASE_URL: '${apimResource.properties.gatewayUrl}/accounting/'
+  }
+  dependsOn: [
+    apimResource
+  ]
 }
 
 resource appServiceLogging 'Microsoft.Web/sites/config@2020-06-01' = {
@@ -89,18 +74,6 @@ resource appServiceLogging 'Microsoft.Web/sites/config@2020-06-01' = {
       enabled: true
     }
   }
-}
-
-resource appServiceAppSettings 'Microsoft.Web/sites/config@2020-06-01' = if (vueConfig) {
-  parent: appService
-  name: 'appsettings'
-  properties: {
-    VUE_APP_MAKELINE_BASE_URL: '${apimResource.properties.gatewayUrl}/makeline/'
-    VUE_APP_ACCOUNTING_BASE_URL: '${apimResource.properties.gatewayUrl}/accounting/'
-  }
-  dependsOn: [
-    apimResource
-  ]
 }
 
 output defaultHostName string = appService.properties.defaultHostName
