@@ -19,7 +19,7 @@ resource orderBackendResource 'Microsoft.ApiManagement/service/backends@2021-12-
     description: orderService.name
     url: 'https://${orderService.properties.configuration.ingress.fqdn}'
     protocol: 'http'
-    resourceId: 'https://management.azure.com/subscriptions/${subscription().subscriptionId}/resourceGroups/${resourceGroup().name}/providers/Microsoft.App/containerApps/${orderService.name}'
+    resourceId: '${environment().resourceManager}${orderService.id}'
   }
 }
 

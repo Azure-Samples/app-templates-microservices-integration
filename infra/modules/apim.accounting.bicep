@@ -19,7 +19,7 @@ resource accountingBackendResource 'Microsoft.ApiManagement/service/backends@202
     description: accountingService.name
     url: 'https://${accountingService.properties.configuration.ingress.fqdn}'
     protocol: 'http'
-    resourceId: 'https://management.azure.com/subscriptions/${subscription().subscriptionId}/resourceGroups/${resourceGroup().name}/providers/Microsoft.App/containerApps/${accountingService.name}'
+    resourceId: '${environment().resourceManager}${accountingService.id}'
   }
 }
 

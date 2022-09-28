@@ -19,7 +19,7 @@ resource makelineBackendResource 'Microsoft.ApiManagement/service/backends@2021-
     description: makeLineService.name
     url: 'https://${makeLineService.properties.configuration.ingress.fqdn}'
     protocol: 'http'
-    resourceId: 'https://management.azure.com/subscriptions/${subscription().subscriptionId}/resourceGroups/${resourceGroup().name}/providers/Microsoft.App/containerApps/${makeLineService.name}'
+    resourceId: '${environment().resourceManager}${makeLineService.id}'
   }
 }
 
