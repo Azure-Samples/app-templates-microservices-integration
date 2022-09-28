@@ -18,6 +18,8 @@ SUFFIX=reddog-$CODE
 REGISTRY=acrreddog$CODE
 GROUP=${NAME}-${SUFFIX}
 
+echo "Start time: ${date}"
+
 ################################################## 
 ### CREATE REGISTRY
 ##################################################
@@ -110,3 +112,5 @@ az deployment sub create --location $LOCATION --template-file ./infra/main.bicep
 
 # deploy virtual worker image
 # az containerapp up --name virtual-worker --resource-group $GROUP --image ${REGISTRY}.azurecr.io/reddog/virtual-worker:latest 
+
+echo "End time: ${date}"
