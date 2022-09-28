@@ -26,7 +26,7 @@ resource appService 'Microsoft.Web/sites@2020-06-01' = {
     serverFarmId: serverFarmId
     httpsOnly: true
     siteConfig: {
-      linuxFxVersion: 'DOCKER|${registry.properties.loginServer}/${imageName}:latest'
+      linuxFxVersion: 'DOCKER|${registry.properties.loginServer}/reddog/${imageName}:latest'
       minTlsVersion: '1.2'
     }
   }
