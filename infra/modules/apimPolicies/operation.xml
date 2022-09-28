@@ -5,10 +5,12 @@
         <rewrite-uri id="apim-generated-policy" template="{template}" />
         <set-header id="apim-generated-policy" name="Ocp-Apim-Subscription-Key" exists-action="delete" />
         <!-- The following cache policy snippets demonstrate how to control API Management response cache duration with Cache-Control headers sent by the backend service. -->
+        <!--
         <cache-lookup vary-by-developer="false" vary-by-developer-groups="false" must-revalidate="true" downstream-caching-type="public">
             <vary-by-header>Accept</vary-by-header>
             <vary-by-header>Accept-Charset</vary-by-header>
         </cache-lookup>
+        -->
     </inbound>
     <backend>
         <base />
@@ -25,7 +27,9 @@
             return (!string.IsNullOrEmpty(maxAge))?int.Parse(maxAge):300;
         }" />
         -->
+        <!--
         <cache-store duration="300" />
+        -->
 </outbound>
     <on-error>
         <base />
