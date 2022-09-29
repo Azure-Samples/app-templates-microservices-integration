@@ -12,6 +12,10 @@ done
 if [ "$NAME" == "" ] || [ "$LOCATION" == "" ] || [ "$CODE" == "" ]; then
  echo "Syntax: $0 -n <name> -l <location> -c <unique code>"
  exit 1;
+elif [[ $CODE =~ [^a-zA-Z0-9] ]]; then
+ echo "Unique code must contain ONLY letters and numbers. No special characters."
+ echo "Syntax: $0 -n <name> -l <location> -c <unique code>"
+ exit 1;
 fi
 
 SUFFIX=reddog-$CODE
