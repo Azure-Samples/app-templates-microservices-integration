@@ -17,8 +17,9 @@ fi
 SUFFIX=reddog-$CODE
 REGISTRY=acrreddog$CODE
 GROUP=${NAME}-${SUFFIX}
+SECONDS=0
 
-echo "Start time: ${date}"
+echo "Start time: $(date)"
 
 ################################################## 
 ### CREATE REGISTRY
@@ -113,4 +114,6 @@ az deployment sub create --location $LOCATION --template-file ./infra/main.bicep
 # deploy virtual worker image
 # az containerapp up --name virtual-worker --resource-group $GROUP --image ${REGISTRY}.azurecr.io/reddog/virtual-worker:latest 
 
-echo "End time: ${date}"
+duration=$SECONDS
+echo "End time: $(date)"
+echo "$(($duration / 3600)) hours, $(($duration / 60)) minutes and $(($duration % 60)) seconds elapsed."
