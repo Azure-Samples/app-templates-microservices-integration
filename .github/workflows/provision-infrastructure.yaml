@@ -1,6 +1,6 @@
 # This workflow provisions the infrastructure
 
-name: Validate workflow
+name: Provision Infrastructure
 
 # Controls when the action will run. Workflow runs when manually triggered using the UI
 # or API.
@@ -31,7 +31,7 @@ jobs:
     name: Determine Environment Name
     runs-on: ubuntu-latest
     outputs:
-      name: ${{ steps.branch.outputs.environment }}
+      environment: ${{ steps.branch.outputs.environment }}
 
     steps:
       - name: Some check on branch
