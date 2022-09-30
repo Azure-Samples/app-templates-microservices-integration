@@ -1,0 +1,64 @@
+# This workflow provisions the infrastructure
+
+name: Validate workflow
+
+# Controls when the action will run. Workflow runs when manually triggered using the UI
+# or API.
+on:
+  push:
+    branches: 
+      - main
+      - develop
+      - features/*
+    paths:
+      - "./infra/**"
+  pull_request:
+    branches:
+      - main
+      - develop
+    paths:
+      - "./infra/**"
+  workflow_dispatch:
+  
+# https://github.com/Azure/login#sample-workflow-that-uses-azure-login-action-using-oidc-to-run-az-cli-linux
+permissions:
+      id-token: write
+      contents: read
+
+jobs:
+
+  prepare:
+    name: Determine Environment Name
+    runs-on: ubuntu-latest
+    outputs:
+      name: ${{ steps.branch.outputs.environment }}
+
+    steps:
+      - name: Some check on branch
+        id: branch
+        run: |
+          echo "Running on branch ${{ github.ref }}"
+          if [ "${{ github.ref }}" = "refs/heads/main" ] || [ "${{ github.ref }}" = "refs/heads/master" ]; then
+            echo "::set-output name=environment::Production"
+          elif [ "${{ github.ref }}" = "refs/heads/dev" ] || [ "${{ github.ref }}" = "refs/heads/develop" ]; then
+            echo "::set-output name=environment::Test"
+          else
+             echo "::set-output name=environment::Features"
+          fi         
+          
+      - name: Use variable setup in previous step
+        run: echo "Deploying to environment '${{ steps.branch.outputs.environment }}'"    
+  
+  provision:
+    needs: [prepare]
+    name: Provision Environment 
+    runs-on: ubuntu-latest
+    environment: 
+      name: ${{ needs.prepare.outputs.environment }}
+
+    steps:
+      - name: Create or Update
+        run: |
+          echo "Deploying on environment '${{ needs.prepare.outputs.environment }}'"
+          temp=$(echo "${{ secrets.UNIQUE_CODE }}" | base64)
+          echo "The resource unique code is '${temp}'"      
