@@ -214,7 +214,7 @@ jobs:
                        -f ./src/RedDog.VirtualWorker/Dockerfile ./src
   
   deploy:
-    needs: [environment, registry, build]
+    needs: [environment, registry, apim, build]
     name: Build Images 
     runs-on: ubuntu-latest
     environment: 
