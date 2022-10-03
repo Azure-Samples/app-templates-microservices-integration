@@ -27,38 +27,56 @@ permissions:
 
 jobs:
 
-  prepare:
+  environment:
     name: Determine Environment Name
     runs-on: ubuntu-latest
     outputs:
-      environment: ${{ steps.branch.outputs.environment }}
+      name: ${{ steps.environment.outputs.name }}
 
     steps:
-      - name: Some check on branch
-        id: branch
+      - name: Set Environment Name
+        id: environment
         run: |
           echo "Running on branch ${{ github.ref }}"
           if [ "${{ github.ref }}" = "refs/heads/main" ] || [ "${{ github.ref }}" = "refs/heads/master" ]; then
-            echo "::set-output name=environment::Production"
+            echo "::set-output name=name::Production"
           elif [ "${{ github.ref }}" = "refs/heads/dev" ] || [ "${{ github.ref }}" = "refs/heads/develop" ]; then
-            echo "::set-output name=environment::Test"
+            echo "::set-output name=name::Test"
           else
-             echo "::set-output name=environment::Features"
+             echo "::set-output name=name::Features"
           fi         
-          
-      - name: Use variable setup in previous step
-        run: echo "Deploying to environment '${{ steps.branch.outputs.environment }}'"    
-  
-  provision:
-    needs: [prepare]
-    name: Provision Environment 
+
+  suffix:
+    needs: [environment]
+    name: Determine Environment Suffix
     runs-on: ubuntu-latest
     environment: 
-      name: ${{ needs.prepare.outputs.environment }}
+      name: ${{ needs.environment.outputs.name }}
+    outputs:
+      value: ${{ steps.suffix.outputs.value }}
+
+    steps:          
+      - name: Set Environment Suffix
+        id: suffix
+        run: |
+          echo "Environment suffix '${{ secrets.AZURE_PROJECT_NAME }}-${{ secrets.AZURE_UNIQUE_CODE }}'"    
+          echo "::set-output name=value::${{ secrets.AZURE_PROJECT_NAME }}-${{ secrets.AZURE_UNIQUE_CODE }}"
+  
+  group:
+    needs: [environment, suffix]
+    name: Provision Resource Group 
+    runs-on: ubuntu-latest
+    environment: 
+      name: ${{ needs.environment.outputs.name }}
 
     steps:
       - name: Create or Update
         run: |
-          echo "Deploying on environment '${{ needs.prepare.outputs.environment }}'"
-          temp=$(echo "${{ secrets.UNIQUE_CODE }}" | base64)
-          echo "The resource unique code is '${temp}'"      
+          RESOURCEGROUPNAME=${{ needs.environment.outputs.name }}-${{ needs.suffix.outputs.value }}
+          if [ $(az group exists --name $RESOURCEGROUPNAME) = false ]; then
+            echo "Creating resource group '${RESOURCEGROUPNAME}'"
+            az group create --name $RESOURCEGROUPNAME --location ${{ secrets.AZURE_LOCATION }}
+          else
+            echo "Resource group '${RESOURCEGROUPNAME}' already exists"
+          fi
+     
