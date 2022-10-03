@@ -227,12 +227,8 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       - name: Deploy
         run: |
-          az deployment sub create --location $LOCATION \
+          az deployment sub create --location ${{ secrets.AZURE_LOCATION }} \
                                   --template-file ./infra/main.bicep \
                                   --parameters name=${{ needs.environment.outputs.name }} \
                                   --parameters location=${{ secrets.AZURE_LOCATION }} \
                                   --parameters uniqueSuffix=${{ secrets.AZURE_PROJECT_NAME }}-${{ secrets.AZURE_UNIQUE_CODE }}
-          
-
-
-                        
