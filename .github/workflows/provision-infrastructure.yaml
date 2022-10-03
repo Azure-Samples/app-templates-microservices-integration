@@ -67,7 +67,7 @@ jobs:
           fi
   
   group:
-    needs: [environment, suffix]
+    needs: [environment, validate]
     name: Provision Resource Group 
     runs-on: ubuntu-latest
     environment: 
