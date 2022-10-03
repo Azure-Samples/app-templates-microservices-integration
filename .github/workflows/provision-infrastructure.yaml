@@ -65,11 +65,17 @@ jobs:
             echo "Please set environment secret 'AZURE_UNIQUE_CODE' before running this workflow"
             exit 1
           fi
+          if [ "${{ secrets.AZURE_LOCATION }}" == "" ]; then
+            echo "Please set environment secret 'AZURE_LOCATION' before running this workflow"
+            exit 1
+          fi
   
   group:
     needs: [environment, validate]
     name: Provision Resource Group 
     runs-on: ubuntu-latest
+    outputs:
+      name: ${{ steps.resource.outputs.name }}
     environment: 
       name: ${{ needs.environment.outputs.name }}
 
@@ -78,15 +84,154 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       - name: Create Group
+        id: resource
         run: |
-          if [ "${{ secrets.AZURE_RESOURCE_GROUP }}" == "" ]; then
-            if [ "${{ secrets.AZURE_LOCATION }}" == "" ]; then
-              echo "Please set environment secret 'AZURE_LOCATION' before running this workflow"
-              exit 1
-            fi
-            RESOURCEGROUPNAME=`az group create --name ${{ needs.environment.outputs.name }}-${{ secrets.AZURE_PROJECT_NAME }}-${{ secrets.AZURE_UNIQUE_CODE }} --location ${{ secrets.AZURE_LOCATION }} --query name | xargs`
-          else
-            RESOURCEGROUPNAME=`az group show --name ${{ secrets.AZURE_RESOURCE_GROUP }} --query name | xargs`
-          fi
+          RESOURCEGROUPNAME=`az group create --name ${{ needs.environment.outputs.name }}-${{ secrets.AZURE_PROJECT_NAME }}-${{ secrets.AZURE_UNIQUE_CODE }} \
+                                            --location ${{ secrets.AZURE_LOCATION }} \
+                                            --query name | xargs`
 
           echo "::set-output name=name::${RESOURCEGROUPNAME}"     
+  
+  apim:
+    needs: [environment, group]
+    name: Provision APIM 
+    runs-on: ubuntu-latest
+    outputs:
+      name: ${{ steps.resource.outputs.name }}
+    environment: 
+      name: ${{ needs.environment.outputs.name }}
+
+    steps:
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Create Resource
+        id: resource
+        run: |
+          APIMNAME=`az apim create --name apim-${{ secrets.AZURE_PROJECT_NAME }}-${{ secrets.AZURE_UNIQUE_CODE }} \
+                                  --resource-group ${{ needs.group.outputs.name }} \
+                                  --location ${{ secrets.AZURE_LOCATION }} \
+                                  --publisher-email apim@contoso.com \
+                                  --publisher-name Contoso \
+                                  --sku-name Developer \
+                                  --sku-capacity 1 \
+                                  --query name | xargs`
+          echo "::set-output name=name::${APIMNAME}" 
+  
+  registry:
+    needs: [environment, group]
+    name: Provision ACR 
+    runs-on: ubuntu-latest
+    outputs:
+      name: ${{ steps.resource.outputs.name }}
+    environment: 
+      name: ${{ needs.environment.outputs.name }}
+
+    steps:
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Create Registry
+        id: resource
+        run: |
+          REGISTRYNAME=`az acr create --resource-group ${{ needs.group.outputs.name }} \
+                        --name acr${{ secrets.AZURE_PROJECT_NAME }}${{ secrets.AZURE_UNIQUE_CODE }} \
+                        --sku Basic \
+                        --admin-enabled true \
+                         --query name | xargs`
+          echo "::set-output name=name::${REGISTRYNAME}"     
+  
+  build:
+    needs: [environment, registry]
+    name: Build Images 
+    runs-on: ubuntu-latest
+    environment: 
+      name: ${{ needs.environment.outputs.name }}
+
+    steps:
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Build Accounting Service
+        run: |
+          az acr build --image reddog/accounting-service:{{.Run.ID}} \
+                       --image reddog/accounting-service:latest \
+                       --registry ${{ needs.registry.outputs.name }} \
+                       -f ./src/RedDog.AccountingService/Dockerfile ./src
+      - name: Build Bootstrapper
+        run: |
+          az acr build --image reddog/bootstrapper:{{.Run.ID}} \
+                       --image reddog/bootstrapper:latest \
+                       --registry ${{ needs.registry.outputs.name }} \
+                       -f ./src/RedDog.Bootstrapper/Dockerfile ./src
+      - name: Build Corporate Transfer Service
+        run: |
+          az acr build --image reddog/corporate-transfer:{{.Run.ID}} \
+                       --image reddog/corporate-transfer:latest \
+                       --registry ${{ needs.registry.outputs.name }} \
+                       -f ./src/RedDog.CorporateTransferService/Dockerfile ./src
+      - name: Build Loyalty Service
+        run: |
+          az acr build --image reddog/loyalty-service:{{.Run.ID}} \
+                       --image reddog/loyalty-service:latest \
+                       --registry ${{ needs.registry.outputs.name }} \
+                       -f ./src/RedDog.LoyaltyService/Dockerfile ./src
+      - name: Build MakeLine Service
+        run: |
+          az acr build --image reddog/make-line:{{.Run.ID}} \
+                       --image reddog/make-line:latest \
+                       --registry ${{ needs.registry.outputs.name }} \
+                       -f ./src/RedDog.MakeLineService/Dockerfile ./src
+      - name: Build Order Service
+        run: |
+          az acr build --image reddog/order-service:{{.Run.ID}} \
+                       --image reddog/order-service:latest \
+                       --registry ${{ needs.registry.outputs.name }} \
+                       -f ./src/RedDog.OrderService/Dockerfile ./src
+      - name: Build Receipt Generation Service
+        run: |
+          az acr build --image reddog/receipt-service:{{.Run.ID}} \
+                       --image reddog/receipt-service:latest \
+                       --registry ${{ needs.registry.outputs.name }} \
+                       -f ./src/RedDog.ReceiptGenerationService/Dockerfile ./src
+      - name: Build UI
+        run: |
+          az acr build --image reddog/ui:{{.Run.ID}} \
+                       --image reddog/ui:latest \
+                       --registry ${{ needs.registry.outputs.name }} \
+                       ./src/RedDog.UI
+      - name: Build Virtual Customer
+        run: |
+          az acr build --image reddog/virtual-customer:{{.Run.ID}} \
+                       --image reddog/virtual-customer:latest \
+                       --registry ${{ needs.registry.outputs.name }} \
+                       ./src/RedDog.VirtualCustomer
+      - name: Build Virtual Worker
+        run: |
+          az acr build --image reddog/virtual-worker:{{.Run.ID}} \
+                       --image reddog/virtual-worker:latest \
+                       --registry ${{ needs.registry.outputs.name }} \
+                       -f ./src/RedDog.VirtualWorker/Dockerfile ./src
+  
+  deploy:
+    needs: [environment, registry, build]
+    name: Build Images 
+    runs-on: ubuntu-latest
+    environment: 
+      name: ${{ needs.environment.outputs.name }}
+
+    steps:
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Deploy Infrastructure
+        run: |
+          az deployment sub create --location $LOCATION \
+                                  --template-file ./infra/main.bicep \
+                                  --parameters name=${{ needs.environment.outputs.name }} \
+                                  --parameters location=${{ secrets.AZURE_LOCATION }} \
+                                  --parameters uniqueSuffix=${{ secrets.AZURE_PROJECT_NAME }}-${{ secrets.AZURE_UNIQUE_CODE }}
+          
+
+
+                        
