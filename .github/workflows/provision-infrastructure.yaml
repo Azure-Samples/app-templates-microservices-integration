@@ -60,6 +60,14 @@ jobs:
         id: suffix
         run: |
           echo "Environment suffix '${{ secrets.AZURE_PROJECT_NAME }}-${{ secrets.AZURE_UNIQUE_CODE }}'"    
+          if [ "${{ secrets.AZURE_PROJECT_NAME }}" == "" ]; then
+            echo "Please set environment secret 'AZURE_PROJECT_NAME' before running this workflow"
+            exit 1
+          fi
+          if [ "${{ secrets.AZURE_UNIQUE_CODE }}" == "" ]; then
+            echo "Please set environment secret 'AZURE_UNIQUE_CODE' before running this workflow"
+            exit 1
+          fi
           echo "::set-output name=value::${{ secrets.AZURE_PROJECT_NAME }}-${{ secrets.AZURE_UNIQUE_CODE }}"
   
   group:
@@ -73,10 +81,14 @@ jobs:
       - name: Create or Update
         run: |
           RESOURCEGROUPNAME=${{ needs.environment.outputs.name }}-${{ needs.suffix.outputs.value }}
-          if [ $(az group exists --name $RESOURCEGROUPNAME) = false ]; then
+          if [ $(az group exists --name $RESOURCEGROUPNAME) ]; then
+            echo "Resource group '${RESOURCEGROUPNAME}' already exists"
+          else
+            if [ "${{ secrets.AZURE_LOCATION }}" == "" ]; then
+              echo "Please set environment secret 'AZURE_LOCATION' before running this workflow"
+              exit 1
+            fi
             echo "Creating resource group '${RESOURCEGROUPNAME}'"
             az group create --name $RESOURCEGROUPNAME --location ${{ secrets.AZURE_LOCATION }}
-          else
-            echo "Resource group '${RESOURCEGROUPNAME}' already exists"
           fi
      
