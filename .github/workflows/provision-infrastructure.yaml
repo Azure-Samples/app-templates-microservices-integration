@@ -46,20 +46,17 @@ jobs:
              echo "::set-output name=name::Features"
           fi         
 
-  suffix:
+  validate:
     needs: [environment]
-    name: Determine Environment Suffix
+    name: Validate Environment Secrets
     runs-on: ubuntu-latest
     environment: 
       name: ${{ needs.environment.outputs.name }}
-    outputs:
-      value: ${{ steps.suffix.outputs.value }}
 
     steps:          
       - name: Set Environment Suffix
         id: suffix
         run: |
-          echo "Environment suffix '${{ secrets.AZURE_PROJECT_NAME }}-${{ secrets.AZURE_UNIQUE_CODE }}'"    
           if [ "${{ secrets.AZURE_PROJECT_NAME }}" == "" ]; then
             echo "Please set environment secret 'AZURE_PROJECT_NAME' before running this workflow"
             exit 1
@@ -68,7 +65,6 @@ jobs:
             echo "Please set environment secret 'AZURE_UNIQUE_CODE' before running this workflow"
             exit 1
           fi
-          echo "::set-output name=value::${{ secrets.AZURE_PROJECT_NAME }}-${{ secrets.AZURE_UNIQUE_CODE }}"
   
   group:
     needs: [environment, suffix]
@@ -78,17 +74,19 @@ jobs:
       name: ${{ needs.environment.outputs.name }}
 
     steps:
-      - name: Create or Update
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Create Group
         run: |
-          RESOURCEGROUPNAME=${{ needs.environment.outputs.name }}-${{ needs.suffix.outputs.value }}
-          if [ $(az group exists --name $RESOURCEGROUPNAME) ]; then
-            echo "Resource group '${RESOURCEGROUPNAME}' already exists"
-          else
+          if [ "${{ secrets.AZURE_RESOURCE_GROUP }}" == "" ]; then
             if [ "${{ secrets.AZURE_LOCATION }}" == "" ]; then
               echo "Please set environment secret 'AZURE_LOCATION' before running this workflow"
               exit 1
             fi
-            echo "Creating resource group '${RESOURCEGROUPNAME}'"
-            az group create --name $RESOURCEGROUPNAME --location ${{ secrets.AZURE_LOCATION }}
+            RESOURCEGROUPNAME=`az group create --name ${{ needs.environment.outputs.name }}-${{ secrets.AZURE_PROJECT_NAME }}-${{ secrets.AZURE_UNIQUE_CODE }} --location ${{ secrets.AZURE_LOCATION }} --query name | xargs`
+          else
+            RESOURCEGROUPNAME=`az group show --name ${{ secrets.AZURE_RESOURCE_GROUP }} --query name | xargs`
           fi
-     
+
+          echo "::set-output name=name::${RESOURCEGROUPNAME}"     
