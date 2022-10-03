@@ -266,7 +266,8 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       - name: Deploy
         run: |
-          az deployment sub create --location ${{ secrets.AZURE_LOCATION }} \
+          az deployment sub create --name ${{ needs.environment.outputs.name }} \
+                                  --location ${{ secrets.AZURE_LOCATION }} \
                                   --template-file ./infra/main.bicep \
                                   --parameters name=${{ needs.environment.outputs.name }} \
                                   --parameters location=${{ secrets.AZURE_LOCATION }} \
