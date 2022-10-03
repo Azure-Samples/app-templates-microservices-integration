@@ -22,8 +22,8 @@ on:
   
 # https://github.com/Azure/login#sample-workflow-that-uses-azure-login-action-using-oidc-to-run-az-cli-linux
 permissions:
-      id-token: write
-      contents: read
+  id-token: write
+  contents: read
 
 jobs:
 
@@ -154,60 +154,99 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       - name: Build Accounting Service
         run: |
+          if [[ $(az acr repository show --name $REGISTRY_NAME --image reddog/accounting-service:latest) ]]; then
+              exit 0
+          fi
           az acr build --image reddog/accounting-service:{{.Run.ID}} \
                        --image reddog/accounting-service:latest \
                        --registry $REGISTRY_NAME \
                        -f ./src/RedDog.AccountingService/Dockerfile ./src
+
       - name: Build Bootstrapper
         run: |
+          if [[ $(az acr repository show --name $REGISTRY_NAME --image reddog/bootstrapper:latest) ]]; then
+              exit 0
+          fi
           az acr build --image reddog/bootstrapper:{{.Run.ID}} \
                        --image reddog/bootstrapper:latest \
                        --registry $REGISTRY_NAME \
                        -f ./src/RedDog.Bootstrapper/Dockerfile ./src
+
       - name: Build Corporate Transfer Service
         run: |
+          if [[ $(az acr repository show --name $REGISTRY_NAME --image reddog/corporate-transfer:latest) ]]; then
+              exit 0
+          fi
           az acr build --image reddog/corporate-transfer:{{.Run.ID}} \
                        --image reddog/corporate-transfer:latest \
                        --registry $REGISTRY_NAME \
                        -f ./src/RedDog.CorporateTransferService/Dockerfile ./src
+
       - name: Build Loyalty Service
         run: |
+          if [[ $(az acr repository show --name $REGISTRY_NAME --image reddog/loyalty-service:latest) ]]; then
+              exit 0
+          fi
           az acr build --image reddog/loyalty-service:{{.Run.ID}} \
                        --image reddog/loyalty-service:latest \
                        --registry $REGISTRY_NAME \
                        -f ./src/RedDog.LoyaltyService/Dockerfile ./src
+
       - name: Build MakeLine Service
         run: |
+          if [[ $(az acr repository show --name $REGISTRY_NAME --image reddog/make-line:latest) ]]; then
+              exit 0
+          fi
           az acr build --image reddog/make-line:{{.Run.ID}} \
                        --image reddog/make-line:latest \
                        --registry $REGISTRY_NAME \
                        -f ./src/RedDog.MakeLineService/Dockerfile ./src
+
       - name: Build Order Service
         run: |
+          if [[ $(az acr repository show --name $REGISTRY_NAME --image reddog/order-service:latest) ]]; then
+              exit 0
+          fi
           az acr build --image reddog/order-service:{{.Run.ID}} \
                        --image reddog/order-service:latest \
                        --registry $REGISTRY_NAME \
                        -f ./src/RedDog.OrderService/Dockerfile ./src
+
       - name: Build Receipt Generation Service
         run: |
+          if [[ $(az acr repository show --name $REGISTRY_NAME --image reddog/receipt-service:latest) ]]; then
+              exit 0
+          fi
           az acr build --image reddog/receipt-service:{{.Run.ID}} \
                        --image reddog/receipt-service:latest \
                        --registry $REGISTRY_NAME \
                        -f ./src/RedDog.ReceiptGenerationService/Dockerfile ./src
+
       - name: Build UI
         run: |
+          if [[ $(az acr repository show --name $REGISTRY_NAME --image reddog/ui:latest) ]]; then
+              exit 0
+          fi
           az acr build --image reddog/ui:{{.Run.ID}} \
                        --image reddog/ui:latest \
                        --registry $REGISTRY_NAME \
                        ./src/RedDog.UI
+
       - name: Build Virtual Customer
         run: |
+          if [[ $(az acr repository show --name $REGISTRY_NAME --image reddog/virtual-customer:latest) ]]; then
+              exit 0
+          fi
           az acr build --image reddog/virtual-customer:{{.Run.ID}} \
                        --image reddog/virtual-customer:latest \
                        --registry $REGISTRY_NAME \
                        ./src/RedDog.VirtualCustomer
+
       - name: Build Virtual Worker
         run: |
+          if [[ $(az acr repository show --name $REGISTRY_NAME --image reddog/virtual-worker:latest) ]]; then
+              exit 0
+          fi
           az acr build --image reddog/virtual-worker:{{.Run.ID}} \
                        --image reddog/virtual-worker:latest \
                        --registry $REGISTRY_NAME \
