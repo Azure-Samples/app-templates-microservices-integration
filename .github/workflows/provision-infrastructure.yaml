@@ -148,6 +148,7 @@ jobs:
       REGISTRY_NAME: acr${{ secrets.AZURE_PROJECT_NAME }}${{ secrets.AZURE_UNIQUE_CODE }}
 
     steps:
+      - uses: actions/checkout@v2   
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
@@ -214,16 +215,17 @@ jobs:
   
   deploy:
     needs: [environment, registry, apim, build]
-    name: Deploy Infrastructure 
+    name: Deploy Bicep 
     runs-on: ubuntu-latest
     environment: 
       name: ${{ needs.environment.outputs.name }}
 
     steps:
+      - uses: actions/checkout@v2   
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - name: Deploy Bicep
+      - name: Deploy
         run: |
           az deployment sub create --location $LOCATION \
                                   --template-file ./infra/main.bicep \
