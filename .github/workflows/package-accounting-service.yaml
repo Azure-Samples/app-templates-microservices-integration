@@ -55,9 +55,9 @@ jobs:
         run: |
           az acr build --registry $REGISTRY \
                        --name $RESOURCE_GROUP \
-                       --image ${{ needs.set-env.outputs.repository }}/${{ needs.set-env.outputs.image }}:latest \
-                       --image ${{ needs.set-env.outputs.repository }}/${{ needs.set-env.outputs.image }}:${{ needs.set-env.outputs.version }} \
-                       --file ./src/RedDog.${{ needs.set-env.outputs.project }}/Dockerfile ./src
+                       --image ${{ needs.environment.outputs.repository }}/${{ needs.environment.outputs.image }}:latest \
+                       --image ${{ needs.environment.outputs.repository }}/${{ needs.environment.outputs.image }}:${{ needs.environment.outputs.version }} \
+                       --file ./src/RedDog.${{ needs.environment.outputs.project }}/Dockerfile ./src
         env:
           REGISTRY: acr${{ secrets.AZURE_PROJECT_NAME }}${{ secrets.AZURE_UNIQUE_CODE }}
           RESOURCE_GROUP: ${{ needs.environment.outputs.name }}-${{ secrets.AZURE_PROJECT_NAME }}-${{ secrets.AZURE_UNIQUE_CODE }}
