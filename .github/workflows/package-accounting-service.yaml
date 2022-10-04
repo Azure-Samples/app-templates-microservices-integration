@@ -12,32 +12,31 @@ on:
 
   workflow_dispatch:
 
+env:
+  VERSION: $(echo ${GITHUB_SHA} | cut -c1-7)
+  PROJECT: AccountingService
+  REPOSITORY: reddog
+  IMAGE: accounting-service
+
 jobs:
   environment:
-    name: Set Environment Variables
+    name: Determine Environment Name
     runs-on: ubuntu-latest
     outputs:
-      version: ${{ steps.main.outputs.version }}
-      created: ${{ steps.main.outputs.created }}
-      project: ${{ steps.main.outputs.project }}
-      image: ${{ steps.main.outputs.image }}
-      repository: ${{ steps.main.outputs.repository }}  
+      name: ${{ steps.environment.outputs.name }}
+
     steps:
-      - id: main
+      - name: Set Environment Name
+        id: environment
         run: |
           echo "Running on branch ${{ github.ref }}"
           if [ "${{ github.ref }}" = "refs/heads/main" ] || [ "${{ github.ref }}" = "refs/heads/master" ]; then
-            echo ::set-output name=name::Production
+            echo "::set-output name=name::Production"
           elif [ "${{ github.ref }}" = "refs/heads/dev" ] || [ "${{ github.ref }}" = "refs/heads/develop" ]; then
-            echo ::set-output name=name::Test
+            echo "::set-output name=name::Test"
           else
-             echo ::set-output name=name::Features
+             echo "::set-output name=name::Features"
           fi         
-          echo ::set-output name=version::$(echo ${GITHUB_SHA} | cut -c1-7)
-          echo ::set-output name=created::$(date -u +'%Y-%m-%dT%H:%M:%SZ')
-          echo ::set-output name=project::AccountingService
-          echo ::set-output name=repository::reddog
-          echo ::set-output name=image::accounting-service
 
   build:
     name: Build Service
@@ -51,13 +50,13 @@ jobs:
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - name: Build Accounting Service
+      - name: Build Image
         run: |
           az acr build --registry $REGISTRY \
                        --name $RESOURCE_GROUP \
-                       --image ${{ needs.environment.outputs.repository }}/${{ needs.environment.outputs.image }}:latest \
-                       --image ${{ needs.environment.outputs.repository }}/${{ needs.environment.outputs.image }}:${{ needs.environment.outputs.version }} \
-                       --file ./src/RedDog.${{ needs.environment.outputs.project }}/Dockerfile ./src
+                       --image ${REPOSITORY}/${IMAGE}:latest \
+                       --image ${REPOSITORY}/${IMAGE}:$VERSION \
+                       --file ./src/RedDog.${PROJECT}/Dockerfile ./src
         env:
           REGISTRY: acr${{ secrets.AZURE_PROJECT_NAME }}${{ secrets.AZURE_UNIQUE_CODE }}
           RESOURCE_GROUP: ${{ needs.environment.outputs.name }}-${{ secrets.AZURE_PROJECT_NAME }}-${{ secrets.AZURE_UNIQUE_CODE }}
