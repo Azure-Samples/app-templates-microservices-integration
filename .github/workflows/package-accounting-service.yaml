@@ -52,7 +52,7 @@ jobs:
       - name: Build Image
         run: |
           az acr build --registry $REGISTRY \
-                       --name $RESOURCE_GROUP \
+                       --resource-group $RESOURCE_GROUP \
                        --image ${REPOSITORY}/${IMAGE}:latest \
                        --image ${REPOSITORY}/${IMAGE}:$(echo ${GITHUB_SHA} | cut -c1-7) \
                        --file ./src/RedDog.${PROJECT}/Dockerfile ./src
