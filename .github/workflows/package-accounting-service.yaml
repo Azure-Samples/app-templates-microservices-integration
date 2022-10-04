@@ -27,11 +27,11 @@ jobs:
         run: |
           echo "Running on branch ${{ github.ref }}"
           if [ "${{ github.ref }}" = "refs/heads/main" ] || [ "${{ github.ref }}" = "refs/heads/master" ]; then
-            echo "::set-output name=name::Production"
+            echo ::set-output name=name::Production
           elif [ "${{ github.ref }}" = "refs/heads/dev" ] || [ "${{ github.ref }}" = "refs/heads/develop" ]; then
-            echo "::set-output name=name::Test"
+            echo ::set-output name=name::Test
           else
-             echo "::set-output name=name::Features"
+             echo ::set-output name=name::Features
           fi         
           echo ::set-output name=version::$(echo ${GITHUB_SHA} | cut -c1-7)
           echo ::set-output name=created::$(date -u +'%Y-%m-%dT%H:%M:%SZ')
