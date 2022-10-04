@@ -1,23 +1,8 @@
-# This workflow provisions the infrastructure
+# This workflow deploys the full solution
 
-name: Provision Infrastructure
+name: Deploy Solution
 
-# Controls when the action will run. Workflow runs when manually triggered using the UI
-# or API.
 on:
-  push:
-    branches: 
-      - main
-      - develop
-      - features/*
-    paths:
-      - "./infra/**"
-  pull_request:
-    branches:
-      - main
-      - develop
-    paths:
-      - "./infra/**"
   workflow_dispatch:
   
 # https://github.com/Azure/login#sample-workflow-that-uses-azure-login-action-using-oidc-to-run-az-cli-linux
