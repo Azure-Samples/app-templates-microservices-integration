@@ -6,21 +6,6 @@ infra:
     path: "infra"
     module: "main"
 services:
-    order: 
-        resourceName: "app-order-reddog-d64f964"
-        project: "./src/RedDog.OrderService"
-        host: "appservice"
-        language: "dotnet"
-    ui:
-        resourceName: "app-ui-reddog-d64f964"
-        project: "./src/RedDog.UI"
-        host: "appservice"
-        language: "js"
-    virtualCustomer:
-        resourceName: "app-vc-reddog-d64f964"
-        project: "./src/RedDog.VirtualCustomers"
-        host: "function"
-        language: "dotnet"
     accounting:
         resourceName: "accounting-service"
         project: "./src/RedDog.AccountingService"
@@ -46,18 +31,40 @@ services:
             path: "./Dockerfile"
             context: "../"
     makeline:
-        resourceName: "makeline-service"
+        resourceName: "make-line"
         project: "./src/RedDog.MakeLineService"
         host: "containerapp"
         module: "./modules/containerApps/makeline.bicep"
         docker:
             path: "./Dockerfile"
             context: "../"
+    order: 
+        resourceName: "app-order-reddog-d64f964"
+        project: "./src/RedDog.OrderService"
+        host: "containerapp"
+        module: "./modules/containerApps/order.bicep"
+        docker:
+            path: "./Dockerfile"
+            context: "../"
     receipt:
-        resourceName: "receipt-generation-service"
+        resourceName: "receipt-service"
         project: "./src/RedDog.ReceiptGenerationService"
         host: "containerapp"
         module: "./modules/containerApps/receipt.bicep"
+        docker:
+            path: "./Dockerfile"
+            context: "../"
+    ui:
+        resourceName: "app-ui-reddog-d64f964"
+        project: "./src/RedDog.UI"
+        host: "appservice"
+        docker:
+            path: "./Dockerfile"
+            context: "../"
+    virtualCustomer:
+        resourceName: "app-vc-reddog-d64f964"
+        project: "./src/RedDog.VirtualCustomer"
+        host: "function"
         docker:
             path: "./Dockerfile"
             context: "../"

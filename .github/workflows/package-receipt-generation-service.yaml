@@ -12,51 +12,36 @@ on:
 
   workflow_dispatch:
 
-env:
-  PROJECT: ReceiptGenerationService
-  REPOSITORY: reddog
-  IMAGE: receipt-service
-
 jobs:
   environment:
     name: Determine Environment Name
-    runs-on: ubuntu-latest
-    outputs:
-      name: ${{ steps.environment.outputs.name }}
+    uses: ./.github/workflows/environment-name.yaml     
 
-    steps:
-      - name: Set Environment Name
-        id: environment
-        run: |
-          echo "Running on branch ${{ github.ref }}"
-          if [ "${{ github.ref }}" = "refs/heads/main" ] || [ "${{ github.ref }}" = "refs/heads/master" ]; then
-            echo "::set-output name=name::Production"
-          elif [ "${{ github.ref }}" = "refs/heads/dev" ] || [ "${{ github.ref }}" = "refs/heads/develop" ]; then
-            echo "::set-output name=name::Test"
-          else
-             echo "::set-output name=name::Features"
-          fi         
+  validate:
+    needs: [environment]
+    name: Validate Environment Secrets
+    uses: ./.github/workflows/validate-secrets.yaml
+    with:
+      environment: ${{ needs.environment.outputs.name }}
+    secrets: 
+      AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+      AZURE_SUFFIX: ${{ secrets.AZURE_SUFFIX }}
+      AZURE_UNIQUE_CODE: ${{ secrets.AZURE_UNIQUE_CODE }}
+      AZURE_LOCATION: ${{ secrets.AZURE_LOCATION }}
 
   build:
+    needs: [environment,validate]
     name: Build Service
-    runs-on: ubuntu-latest
-    needs: environment
-    environment: 
-      name: ${{ needs.environment.outputs.name }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - name: Build Image
-        run: |
-          az acr build --registry $REGISTRY \
-                       --resource-group $RESOURCE_GROUP \
-                       --image ${REPOSITORY}/${IMAGE}:latest \
-                       --image ${REPOSITORY}/${IMAGE}:$(echo ${GITHUB_SHA} | cut -c1-7) \
-                       --file ./src/RedDog.${PROJECT}/Dockerfile ./src
-        env:
-          REGISTRY: acr${{ secrets.AZURE_PROJECT_NAME }}${{ secrets.AZURE_UNIQUE_CODE }}
-          RESOURCE_GROUP: ${{ needs.environment.outputs.name }}-${{ secrets.AZURE_PROJECT_NAME }}-${{ secrets.AZURE_UNIQUE_CODE }}
+    uses: ./.github/workflows/build-service.yaml
+    with:
+      environment: ${{ needs.environment.outputs.name }}
+      project: RedDog.ReceiptGenerationService
+      context: ./src
+      repository: reddog
+      image: receipt-service
+      skipExisting: false
+    secrets: 
+      AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+      AZURE_SUFFIX: ${{ secrets.AZURE_SUFFIX }}
+      AZURE_UNIQUE_CODE: ${{ secrets.AZURE_UNIQUE_CODE }}  
 

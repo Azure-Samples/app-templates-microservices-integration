@@ -1,0 +1,54 @@
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+      project:
+        required: true
+        type: string
+      repository:
+        required: true
+        type: string
+      image:
+        required: true
+        type: string
+      context:
+        required: true
+        type: string
+      skipExisting:
+        required: false
+        type: boolean
+    secrets:
+      AZURE_CREDENTIALS:
+        required: true
+      AZURE_SUFFIX:
+        required: true
+      AZURE_UNIQUE_CODE:
+        required: true
+
+jobs:
+  build:
+    name: Build Service
+    runs-on: ubuntu-latest
+    environment: 
+      name: ${{ inputs.environment }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Build Image
+        run: |
+          if [[ ${{ inputs.skipExisting }} == true && $(az acr repository show --name $REGISTRY --image ${{ inputs.repository }}/${{ inputs.image }}:latest) ]]; then
+            exit 0
+          fi
+          az acr build --registry $REGISTRY \
+                       --resource-group $RESOURCE_GROUP \
+                       --image ${{ inputs.repository }}/${{ inputs.image }}:latest \
+                       --image ${{ inputs.repository }}/${{ inputs.image }}:$(echo ${GITHUB_SHA} | cut -c1-7) \
+                       --file ./src/${{ inputs.project }}/Dockerfile ${{ inputs.context }}
+        env:
+          REGISTRY: acr${{ secrets.AZURE_SUFFIX }}${{ secrets.AZURE_UNIQUE_CODE }}
+          RESOURCE_GROUP: ${{ inputs.environment }}-${{ secrets.AZURE_SUFFIX }}-${{ secrets.AZURE_UNIQUE_CODE }}
