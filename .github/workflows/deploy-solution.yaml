@@ -1,0 +1,259 @@
+# This workflow deploys the full solution
+
+name: Deploy Solution
+
+on:
+  workflow_dispatch:
+  
+# https://github.com/Azure/login#sample-workflow-that-uses-azure-login-action-using-oidc-to-run-az-cli-linux
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+
+  environment:
+    name: Determine Environment Name
+    runs-on: ubuntu-latest
+    outputs:
+      name: ${{ steps.environment.outputs.name }}
+
+    steps:
+      - name: Set Environment Name
+        id: environment
+        run: |
+          echo "Running on branch ${{ github.ref }}"
+          if [ "${{ github.ref }}" = "refs/heads/main" ] || [ "${{ github.ref }}" = "refs/heads/master" ]; then
+            echo "::set-output name=name::Production"
+          elif [ "${{ github.ref }}" = "refs/heads/dev" ] || [ "${{ github.ref }}" = "refs/heads/develop" ]; then
+            echo "::set-output name=name::Test"
+          else
+             echo "::set-output name=name::Features"
+          fi         
+
+  validate:
+    needs: [environment]
+    name: Validate Environment Secrets
+    runs-on: ubuntu-latest
+    environment: 
+      name: ${{ needs.environment.outputs.name }}
+
+    steps:          
+      - run: |
+          if [ "${{ secrets.AZURE_PROJECT_NAME }}" == "" ]; then
+            echo "Please set environment secret 'AZURE_PROJECT_NAME' before running this workflow"
+            exit 1
+          fi
+          if [ "${{ secrets.AZURE_UNIQUE_CODE }}" == "" ]; then
+            echo "Please set environment secret 'AZURE_UNIQUE_CODE' before running this workflow"
+            exit 1
+          fi
+          if [ "${{ secrets.AZURE_LOCATION }}" == "" ]; then
+            echo "Please set environment secret 'AZURE_LOCATION' before running this workflow"
+            exit 1
+          fi
+  
+  group:
+    needs: [environment, validate]
+    name: Provision Resource Group 
+    runs-on: ubuntu-latest
+    outputs:
+      name: ${{ steps.resource.outputs.name }}
+    environment: 
+      name: ${{ needs.environment.outputs.name }}
+
+    steps:
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Create Group
+        id: resource
+        run: |
+          az group create --name $RESOURCE_GROUP \
+                          --location ${{ secrets.AZURE_LOCATION }} \
+                          --query name
+        env:
+          RESOURCE_GROUP: ${{ needs.environment.outputs.name }}-${{ secrets.AZURE_PROJECT_NAME }}-${{ secrets.AZURE_UNIQUE_CODE }}
+  
+  apim:
+    needs: [environment, group]
+    name: Provision APIM 
+    runs-on: ubuntu-latest
+    outputs:
+      name: ${{ steps.resource.outputs.name }}
+    environment: 
+      name: ${{ needs.environment.outputs.name }}
+
+    steps:
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Create Resource
+        id: resource
+        run: |
+          az apim create --name apim-${{ secrets.AZURE_PROJECT_NAME }}-${{ secrets.AZURE_UNIQUE_CODE }} \
+                                  --resource-group $RESOURCE_GROUP \
+                                  --location ${{ secrets.AZURE_LOCATION }} \
+                                  --publisher-email apim@contoso.com \
+                                  --publisher-name Contoso \
+                                  --sku-name Developer \
+                                  --sku-capacity 1
+        env:
+          RESOURCE_GROUP: ${{ needs.environment.outputs.name }}-${{ secrets.AZURE_PROJECT_NAME }}-${{ secrets.AZURE_UNIQUE_CODE }}
+  
+  registry:
+    needs: [environment, group]
+    name: Provision ACR 
+    runs-on: ubuntu-latest
+    environment: 
+      name: ${{ needs.environment.outputs.name }}
+
+    steps:
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Create Registry
+        id: resource
+        run: |
+          az acr create --resource-group $RESOURCE_GROUP \
+                        --name $REGISTRY_NAME \
+                        --sku Basic \
+                        --admin-enabled true
+        env:
+          RESOURCE_GROUP: ${{ needs.environment.outputs.name }}-${{ secrets.AZURE_PROJECT_NAME }}-${{ secrets.AZURE_UNIQUE_CODE }}
+          REGISTRY_NAME: acr${{ secrets.AZURE_PROJECT_NAME }}${{ secrets.AZURE_UNIQUE_CODE }}
+  
+  build:
+    needs: [environment, registry]
+    name: Build Images 
+    runs-on: ubuntu-latest
+    environment: 
+      name: ${{ needs.environment.outputs.name }}
+    env:
+      REGISTRY_NAME: acr${{ secrets.AZURE_PROJECT_NAME }}${{ secrets.AZURE_UNIQUE_CODE }}
+
+    steps:
+      - uses: actions/checkout@v2   
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Build Accounting Service
+        run: |
+          if [[ $(az acr repository show --name $REGISTRY_NAME --image reddog/accounting-service:latest) ]]; then
+              exit 0
+          fi
+          az acr build --image reddog/accounting-service:{{.Run.ID}} \
+                       --image reddog/accounting-service:latest \
+                       --registry $REGISTRY_NAME \
+                       -f ./src/RedDog.AccountingService/Dockerfile ./src
+
+      - name: Build Bootstrapper
+        run: |
+          if [[ $(az acr repository show --name $REGISTRY_NAME --image reddog/bootstrapper:latest) ]]; then
+              exit 0
+          fi
+          az acr build --image reddog/bootstrapper:{{.Run.ID}} \
+                       --image reddog/bootstrapper:latest \
+                       --registry $REGISTRY_NAME \
+                       -f ./src/RedDog.Bootstrapper/Dockerfile ./src
+
+      - name: Build Corporate Transfer Service
+        run: |
+          if [[ $(az acr repository show --name $REGISTRY_NAME --image reddog/corporate-transfer:latest) ]]; then
+              exit 0
+          fi
+          az acr build --image reddog/corporate-transfer:{{.Run.ID}} \
+                       --image reddog/corporate-transfer:latest \
+                       --registry $REGISTRY_NAME \
+                       -f ./src/RedDog.CorporateTransferService/Dockerfile ./src
+
+      - name: Build Loyalty Service
+        run: |
+          if [[ $(az acr repository show --name $REGISTRY_NAME --image reddog/loyalty-service:latest) ]]; then
+              exit 0
+          fi
+          az acr build --image reddog/loyalty-service:{{.Run.ID}} \
+                       --image reddog/loyalty-service:latest \
+                       --registry $REGISTRY_NAME \
+                       -f ./src/RedDog.LoyaltyService/Dockerfile ./src
+
+      - name: Build MakeLine Service
+        run: |
+          if [[ $(az acr repository show --name $REGISTRY_NAME --image reddog/make-line:latest) ]]; then
+              exit 0
+          fi
+          az acr build --image reddog/make-line:{{.Run.ID}} \
+                       --image reddog/make-line:latest \
+                       --registry $REGISTRY_NAME \
+                       -f ./src/RedDog.MakeLineService/Dockerfile ./src
+
+      - name: Build Order Service
+        run: |
+          if [[ $(az acr repository show --name $REGISTRY_NAME --image reddog/order-service:latest) ]]; then
+              exit 0
+          fi
+          az acr build --image reddog/order-service:{{.Run.ID}} \
+                       --image reddog/order-service:latest \
+                       --registry $REGISTRY_NAME \
+                       -f ./src/RedDog.OrderService/Dockerfile ./src
+
+      - name: Build Receipt Generation Service
+        run: |
+          if [[ $(az acr repository show --name $REGISTRY_NAME --image reddog/receipt-service:latest) ]]; then
+              exit 0
+          fi
+          az acr build --image reddog/receipt-service:{{.Run.ID}} \
+                       --image reddog/receipt-service:latest \
+                       --registry $REGISTRY_NAME \
+                       -f ./src/RedDog.ReceiptGenerationService/Dockerfile ./src
+
+      - name: Build UI
+        run: |
+          if [[ $(az acr repository show --name $REGISTRY_NAME --image reddog/ui:latest) ]]; then
+              exit 0
+          fi
+          az acr build --image reddog/ui:{{.Run.ID}} \
+                       --image reddog/ui:latest \
+                       --registry $REGISTRY_NAME \
+                       ./src/RedDog.UI
+
+      - name: Build Virtual Customer
+        run: |
+          if [[ $(az acr repository show --name $REGISTRY_NAME --image reddog/virtual-customer:latest) ]]; then
+              exit 0
+          fi
+          az acr build --image reddog/virtual-customer:{{.Run.ID}} \
+                       --image reddog/virtual-customer:latest \
+                       --registry $REGISTRY_NAME \
+                       ./src/RedDog.VirtualCustomer
+
+      - name: Build Virtual Worker
+        run: |
+          if [[ $(az acr repository show --name $REGISTRY_NAME --image reddog/virtual-worker:latest) ]]; then
+              exit 0
+          fi
+          az acr build --image reddog/virtual-worker:{{.Run.ID}} \
+                       --image reddog/virtual-worker:latest \
+                       --registry $REGISTRY_NAME \
+                       -f ./src/RedDog.VirtualWorker/Dockerfile ./src
+  
+  deploy:
+    needs: [environment, registry, apim, build]
+    name: Deploy Bicep 
+    runs-on: ubuntu-latest
+    environment: 
+      name: ${{ needs.environment.outputs.name }}
+
+    steps:
+      - uses: actions/checkout@v2   
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Deploy
+        run: |
+          az deployment sub create --name ${{ needs.environment.outputs.name }} \
+                                  --location ${{ secrets.AZURE_LOCATION }} \
+                                  --template-file ./infra/main.bicep \
+                                  --parameters name=${{ needs.environment.outputs.name }} \
+                                  --parameters location=${{ secrets.AZURE_LOCATION }} \
+                                  --parameters uniqueSuffix=${{ secrets.AZURE_PROJECT_NAME }}-${{ secrets.AZURE_UNIQUE_CODE }}
