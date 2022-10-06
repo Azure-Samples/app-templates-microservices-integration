@@ -27,13 +27,15 @@ Below is the architecture  deployed in this demonstration.
 * [Azure Container Registry](https://azure.microsoft.com/en-ca/products/container-registry/)
 * [Azure Monitor](https://azure.microsoft.com/en-ca/products/monitor/)
 
-## Benefits of this Architecture
+## Benefits of this Architecture Sample
 
 ### Benefits
 
 1. Deploy microservices containers without needing to manage complex container orchestration infrastructure.
-1. Running containerized workloads on a serverless and consumption based platform.
-1. Continuous build to produce container images and orchestration to increase speed and realiability of deployments.
+1. Running containerized workloads on a serverless and consumption based platform that supports scale to zero.
+1. Deploying APIs and exposing APIs to internal and external clients.
+1. API Management provides the publishing capability for HTTP APIs, to promote reuse and discoverability. It can manage other cross-cutting concerns such as authentication, throughput limits, and response caching.
+1. Continuous build to produce container images and deployment orchestration to increase speed and reliability of deployments.
 
 ### Potential Extensions and Alternatives
 
@@ -42,13 +44,25 @@ Below is the architecture  deployed in this demonstration.
 
 ## Getting Started
 
+The deployment involves the following:
+1. Create the resource group and Azure Container Registry.
+1. Build the microservices and create the corresponding container images.
+1. Push the container images to the Azure Container Registry.
+1. Provision the infrastructure and deploy the microservices and configurations.
+
+There are two deployment options:
+1. Deployment script method is to provide a quick start to facilitate developer scenarios. It is the quickest way to get the solution provisioned and functioning in Azure for exploration. 
+1. The DevOps method is to provide GitHub actions pipelines to support continuous deployment scenarios. 
+
+>**NOTE**: The APIM deployment can take over an hour to complete.
+
 ### Prerequisites
 
 1. Local bash shell with Azure CLI or [Azure Cloud Shell](https://ms.portal.azure.com/#cloudshell/)
 1. Azure Subscription. [Create one for free](https://azure.microsoft.com/en-us/free/).
 1. Clone or fork of this repository.
 
-### Quickstart
+### QuickStart Option
 
 ```
 git clone https://github.com/Azure-Samples/app-templates-eshop-on-paas.git
@@ -60,7 +74,7 @@ az account show
 ./deploy.sh -n demo -l eastus2 -c 4f6s1d
 ```
 
-### GitHub Actions
+### GitHub Actions Option
 
 GitHub workflows are included for deploying the solution to Azure.
 
@@ -78,8 +92,6 @@ To run the workflows, follow these steps:
 3. Go to [Actions](https://github.com/Azure-Samples/app-templates-eshop-on-paas/actions/)
 4. Click on `Deploy Solution`
 5. Click on `Run workflow`
-
-
 
 ## Enhancements Opportunities
 
