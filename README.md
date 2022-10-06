@@ -17,7 +17,6 @@ Below is the architecture  deployed in this demonstration.
 
 ![Integration Architecture](assets/paas-architecture.png)
 
-
 ### Additional Azure Services
 
 * [Azure Service Bus](https://azure.microsoft.com/en-us/products/service-bus/)
@@ -27,6 +26,19 @@ Below is the architecture  deployed in this demonstration.
 * [Azure Cache for Redis](https://azure.microsoft.com/en-ca/products/cache/)
 * [Azure Container Registry](https://azure.microsoft.com/en-ca/products/container-registry/)
 * [Azure Monitor](https://azure.microsoft.com/en-ca/products/monitor/)
+
+## Benefits of this Architecture
+
+### Benefits
+
+1. Deploy microservices containers without needing to manage complex container orchestration infrastructure.
+1. Running containerized workloads on a serverless and consumption based platform.
+1. Continuous build to produce container images and orchestration to increase speed and realiability of deployments.
+
+### Potential Extensions and Alternatives
+
+1. [Deploy microservices with Azure Container Apps and Dapr](https://learn.microsoft.com/en-us/azure/architecture/example-scenario/serverless/microservices-with-container-apps-dapr)
+1. [Deploy microservices with Azure Container Apps](https://learn.microsoft.com/en-us/azure/architecture/example-scenario/serverless/microservices-with-container-apps)
 
 ## Getting Started
 
@@ -67,14 +79,7 @@ To run the workflows, follow these steps:
 4. Click on `Deploy Solution`
 5. Click on `Run workflow`
 
-## Benefits of this Architecture
 
-Below are benefits and potential extension scenarios for this architecture:
-
-1. Integrate backend systems using message broker to decouple services for scalability and reliability. 
-2. Allows work to be queued when backend systems are unavailable.
-3. API Management provides the publishing capability for HTTP APIs, to promote reuse and discoverability. It can manage other cross-cutting concerns such as authentication, throughput limits, and response caching.
-4. Provide load leveling to handle bursts in workloads and broadcast messages to multiple consumers.
 
 ## Enhancements Opportunities
 
