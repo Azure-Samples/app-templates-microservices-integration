@@ -82,7 +82,7 @@ az acr build --image reddog/virtual-worker:{{.Run.ID}} --image reddog/virtual-wo
 ##################################################
 
 # provision infrastructure
-az deployment sub create --location $LOCATION --template-file ./infra/main.bicep --parameters name=$NAME --parameters location=$LOCATION --parameters uniqueSuffix=$SUFFIX
+az deployment sub create --name $NAME --location $LOCATION --template-file ./infra/main.bicep --parameters name=$NAME --parameters location=$LOCATION --parameters uniqueSuffix=$SUFFIX
 
 ################################################## 
 ### DEPLOY IMAGES
