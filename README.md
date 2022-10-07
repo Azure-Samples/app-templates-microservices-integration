@@ -1,15 +1,15 @@
 # Red Dog Demo: Azure Container Apps, Azure App Service, Azure Functions, and Azure API Management
 
-This repository leverages the [Reddog codebase](https://github.com/Azure/reddog-code) and the [Reddog Container Apps](https://github.com/Azure/reddog-containerapps) bicep modules. It was created to help users deploy a comprehensive, microservice-based sample application to [Azure Container Apps](https://azure.microsoft.com/en-us/services/container-apps/), [Azure App Service](https://azure.microsoft.com/en-us/products/app-service/), [Azure Functions](https://azure.microsoft.com/en-us/products/functions/), and [Azure API Management](https://azure.microsoft.com/en-us/products/api-management/).
+This repository leverages the [Reddog codebase](https://github.com/Azure/reddog-code) and the [Reddog Container Apps](https://github.com/Azure/reddog-containerapps) bicep modules. It was created to help users deploy a comprehensive, microservice-based sample application to [Azure Container Apps](https://azure.microsoft.com/services/container-apps/), [Azure App Service](https://azure.microsoft.com/products/app-service/), [Azure Functions](https://azure.microsoft.com/products/functions/), and [Azure API Management](https://azure.microsoft.com/products/api-management/).
 
 ## Features
 
 This project framework provides the following features:
 
-* UI is hosted in [Azure App Service](https://azure.microsoft.com/en-us/products/app-service/), a fully managed service for creating enterprise-ready web and mobile apps for any platform or device quickly and easily with built-in infrastructure maintenance, security patching, and scaling.
-* Virtual Customers are hosted in [Azure Functions](https://azure.microsoft.com/en-us/products/functions/), a serverless computing service for creating event-driven, scalable serverless applications in .NET, Node.js, Python, Java, or PowerShell.
-* The rest of the micro services are hosted in [Azure Container Apps](https://azure.microsoft.com/en-us/services/container-apps/), a fully managed, serverless container service used to build and deploy modern apps at scale. In this solution, you're hosting all 10 microservices on Azure Container Apps and deploying them into a single Container App environment. This environment acts as a secure boundary around the system.
-* Integration between the UI, Virtual Customers, and Container Apps is handled by [API Management](https://azure.microsoft.com/en-us/products/api-management/), a hybrid, multicloud management platform for APIs across all environments.
+- The User Interface (UI) is hosted in [Azure App Service](https://azure.microsoft.com/products/app-service/), a fully managed service for creating enterprise-ready web and mobile apps for any platform or device quickly and easily with built-in infrastructure maintenance, security patching, and scaling.
+- Virtual Customers are hosted in [Azure Functions](https://azure.microsoft.com/products/functions/), a serverless computing service for creating event-driven, scalable serverless applications in .NET, Node.js, Python, Java, or PowerShell.
+- The rest of the micro services are hosted in [Azure Container Apps](https://azure.microsoft.com/services/container-apps/), a fully managed, serverless container service used to build and deploy modern apps at scale. In this solution, you're hosting all 10 microservices on Azure Container Apps and deploying them into a single Container App environment. This environment acts as a secure boundary around the system.
+- Integration between the UI, Virtual Customers, and Container Apps is handled by [API Management](https://azure.microsoft.com/products/api-management/), a hybrid, multicloud management platform for APIs across all environments.
 
 ## Architecture
 
@@ -17,16 +17,35 @@ Below is the architecture  deployed in this demonstration.
 
 ![Integration Architecture](assets/paas-architecture.png)
 
+- **[Azure App Service](https://learn.microsoft.com/azure/app-service/overview)** is a fully managed HTTP-based service that builds, deploys, and scales web apps. .NET, .NET Core, Java, Ruby, Node.js, PHP, and Python are all supported. Applications can run and scale in either Windows or Linux-based environments. 
+
+- **[Azure Functions](https://azure.microsoft.com/services/functions)** is a serverless solution that allows you to focus more on blocks of code that can be executed with minimal infrastructure management. Functions can be hosted in [various hosting plans](/azure/azure-functions/functions-scale), whereas this reference architecture uses the premium plan, due to the use of private endpoints.
+
+- **[Azure API Management](https://azure.microsoft.com/services/api-management)** is a managed service that allows you to manage services across hybrid and multi-cloud environments. API management acts as a facade to abstract the backend architecture, and it provides control and security for API observability and consumption for both internal and external users.
+
 ### Additional Azure Services
 
-* [Azure resource groups](https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/manage-resource-groups-portal) are logical containers for Azure resources. You use a single resource group to structure everything related to this solution in the Azure portal.
-* [Azure Container Registry](https://azure.microsoft.com/en-ca/products/container-registry/), a registry of Docker and Open Container Initiative (OCI) images, with support for all OCI artifacts
-* [Azure Service Bus](https://azure.microsoft.com/services/service-bus) is a fully managed enterprise message broker complete with queues and publish-subscribe topics. In this solution, use it for the Dapr pub/sub component implementation. Multiple services use this component. The order service publishes messages on the bus, and the Makeline, accounting, loyalty, and receipt services subscribe to these messages.
-* [Azure Cosmos DB](https://azure.microsoft.com/services/cosmos-db) is a NoSQL, multi-model managed database service. Use it as a Dapr state store component for the loyalty service to store customer's loyalty data.
-* [Azure Cache for Redis](https://azure.microsoft.com/services/cache) is a distributed, in-memory, scalable managed Redis cache. It's used as a Dapr state store component for the Makeline Service to store data on the orders that are being processed.
-* [Azure SQL Database](https://azure.microsoft.com/products/azure-sql/database) is an intelligent, scalable, relational database service built for the cloud. Create it for the accounting service, which uses [Entity Framework Core](/ef/core/) to interface with the database. The Bootstrapper service is responsible for setting up the SQL tables in the database, and then runs once before establishing the connection to the accounting service.
-* [Azure Blob Storage](https://azure.microsoft.com/services/storage/blobs) stores massive amounts of unstructured data like text or binary files. The receipt service uses Blob Storage via a Dapr output binding to store the order receipts.
-* [Azure Monitor](https://azure.microsoft.com/services/monitor) enables you to collect, analyze, and act on customer content data from your Azure infrastructure environments. You'll use it with [Application Insights](/azure/azure-monitor/app/app-insights-overview) to view the container logs and collect metrics from the microservices.
+- **[Azure resource groups](https://learn.microsoft.com/azure/azure-resource-manager/management/manage-resource-groups-portal)** are logical containers for Azure resources. You use a single resource group to structure everything related to this solution in the Azure portal.
+
+- **[Azure Container Registry](https://azure.microsoft.com/products/container-registry/)**, a registry of Docker and Open Container Initiative (OCI) images, with support for all OCI artifacts
+
+- **[Azure Service Bus](https://azure.microsoft.com/services/service-bus)** is a fully managed enterprise message broker complete with queues and publish-subscribe topics. In this solution, use it for the Dapr pub/sub component implementation. Multiple services use this component. The order service publishes messages on the bus, and the Makeline, accounting, loyalty, and receipt services subscribe to these messages.
+
+- **[Azure Cosmos DB](https://azure.microsoft.com/services/cosmos-db)** is a NoSQL, multi-model managed database service. Use it as a Dapr state store component for the loyalty service to store customer's loyalty data.
+
+- **[Azure Cache for Redis](https://azure.microsoft.com/services/cache)** is a distributed, in-memory, scalable managed Redis cache. It's used as a Dapr state store component for the Makeline Service to store data on the orders that are being processed.
+
+- **[Azure SQL Database](https://azure.microsoft.com/products/azure-sql/database)** is an intelligent, scalable, relational database service built for the cloud. Create it for the accounting service, which uses [Entity Framework Core](/ef/core/) to interface with the database. The Bootstrapper service is responsible for setting up the SQL tables in the database, and then runs once before establishing the connection to the accounting service.
+
+- **[Azure Blob Storage](https://azure.microsoft.com/services/storage/blobs)** stores massive amounts of unstructured data like text or binary files. The receipt service uses Blob Storage via a Dapr output binding to store the order receipts.
+
+- **[Azure Monitor's](https://azure.microsoft.com/services/monitor) [Application Insights](/azure/azure-monitor/app/app-insights-overview)** helps developers detect anomalies, diagnose issues, and understand usage patterns. Application Insights features extensible application performance management and monitoring for live web apps. Various platforms are supported, including .NET, Node.js, Java, and Python. It supports apps that are hosted in Azure, on-premises, in a hybrid environment, or in other public clouds. Application Insights is included as part of this reference architecture, to monitor the behaviors of the deployed application.
+
+- **[Azure Monitor's](https://azure.microsoft.com/services/monitor) [Log Analytics](/azure/azure-monitor/logs/log-analytics-overview)** allows you to edit and run log queries with data in Azure Monitor Logs, optionally from within the Azure portal. Developers can run simple queries for a set of records or use Log Analytics to perform advanced analysis. They can then visualize the results. Log Analytics is configured as part of this reference architecture, to aggregate all the monitoring logs for more analysis and reporting.
+
+This architecture uses Azure Container Apps integration with a managed version of the [Distributed Application Runtime (Dapr)](https://dapr.io/). Dapr is an open source project that helps developers with the inherent challenges in distributed applications, like state management and service invocation.
+
+Azure Container Apps also provides a managed version of [Kubernetes Event-driven Autoscaling (KEDA)](https://keda.sh/). KEDA lets your containers autoscale based on incoming events from external services like Azure Service Bus and Azure Cache for Redis.
 
 ## Benefits of this Architecture Sample
 
@@ -40,8 +59,8 @@ Below is the architecture  deployed in this demonstration.
 
 ### Potential Extensions and Alternatives
 
-1. [Deploy microservices with Azure Container Apps and Dapr](https://learn.microsoft.com/en-us/azure/architecture/example-scenario/serverless/microservices-with-container-apps-dapr)
-1. [Deploy microservices with Azure Container Apps](https://learn.microsoft.com/en-us/azure/architecture/example-scenario/serverless/microservices-with-container-apps)
+1. [Deploy microservices with Azure Container Apps and Dapr](https://learn.microsoft.com/azure/architecture/example-scenario/serverless/microservices-with-container-apps-dapr)
+1. [Deploy microservices with Azure Container Apps](https://learn.microsoft.com/azure/architecture/example-scenario/serverless/microservices-with-container-apps)
 
 ## Getting Started
 
@@ -60,7 +79,7 @@ There are two deployment options:
 ### Prerequisites
 
 1. Local bash shell with Azure CLI or [Azure Cloud Shell](https://ms.portal.azure.com/#cloudshell/)
-1. Azure Subscription. [Create one for free](https://azure.microsoft.com/en-us/free/).
+1. Azure Subscription. [Create one for free](https://azure.microsoft.com/free/).
 1. Clone or fork of this repository.
 
 ### QuickStart Option
@@ -72,7 +91,7 @@ A bash script is included for quickly provisioning a fully functional environmen
 -l: The region where resources will be deployed.
 -c: A unique string that will ensure all resources provisioned are globally unique.
 ```
-> **NOTE:** Please refer to the [Resource Name Rules](https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/resource-name-rules#microsoftweb) to learn more about globally unique resources.
+> **NOTE:** Please refer to the [Resource Name Rules](https://learn.microsoft.com/azure/azure-resource-manager/management/resource-name-rules#microsoftweb) to learn more about globally unique resources.
 
 Follow the steps below to quickly deploy using the bash script:
 
@@ -122,6 +141,52 @@ To run the workflows, follow these steps:
 4. Click on the `Deploy Solution` action
 5. Click on `Run workflow` and select a branch
 
+### Verifying Deployment
+
+When the deployment completes. 
+
+1. Navigate to the [resource group](https://learn.microsoft.com/azure/azure-resource-manager/management/manage-resource-groups-portal) in the [Azure Portal](https://portal.azure.com). You should see a list of resources that looks something like this:
+
+![Deployed Resources](assets/deployed-resources.png)
+
+> **NOTE:** In the image above `0ef88b` is the unique code supplied to `deploy.sh` or stored in the `AZURE_UNIQUE_CODE` secret.
+
+2. Click on the UI [App Service](https://learn.microsoft.com/azure/app-service/overview) resource named `ui-reddog-<unique code>`. In the Overview tab, the URL of the User Interface is displayed as follows:
+
+```
+https://ui-reddog-<unique code>.azurewebsites.net
+```
+
+3. Click on the URL to open up a dashboard UI. After a few minutes, the screen should look something like the screen below:
+
+![RedDog Dashboard](assets/reddog-dashboard.png)
+
+
+## Delete the Deployment
+
+Clean up the deployment by deleting the single resource group that contains the Reddog infrastructure.
+
+> **WARNING:** This will delete ALL the resources inside the resource group.
+
+1. Make the bash script executable
+```
+chmod +x ./destroy.sh
+```
+
+1. Login to Azure and ensure the correct subscription is selected
+```
+az login
+az account set --subscription <subscription id>
+az account show
+```
+
+1. Run the script and provide required parameters
+```
+./destroy.sh -n demo -c <unique code>
+```
+
+> **NOTE:** The unique code provided to `destroy.sh` has to match the one provided during deployment.
+
 ## Enhancements Opportunities
 
 Below are opportunities for enhancements. Pull requests are welcome: 
@@ -135,3 +200,28 @@ Below are opportunities for enhancements. Pull requests are welcome:
 ## Next steps
 
 - [Azure Container Apps docs](/azure/container-apps)
+- Other Reddog order management system implementations:
+  - [Container Apps deployment](https://github.com/Azure/reddog-containerapps)
+  - [Azure Arc hybrid deployment](https://github.com/Azure/reddog-hybrid-arc)
+  - [AKS deployment](https://github.com/Azure/reddog-aks)
+  - [Local development](https://github.com/Azure/reddog-code/blob/master/docs/local-dev.md)
+
+
+## Related resources
+
+[Deploy microservices with Azure Container Apps and Dapr](https://learn.microsoft.com/azure/architecture/example-scenario/serverless/microservices-with-container-apps-dapr)
+[Integration architecture design](https://learn.microsoft.com/en-us/azure/architecture/integration/integration-start-here)
+
+## Contributing
+
+This project welcomes contributions and suggestions.  Most contributions require you to agree to a
+Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
+the rights to use your contribution. For details, visit https://cla.opensource.microsoft.com.
+
+When you submit a pull request, a CLA bot will automatically determine whether you need to provide
+a CLA and decorate the PR appropriately (e.g., status check, comment). Simply follow the instructions
+provided by the bot. You will only need to do this once across all repos using our CLA.
+
+This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
+For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
+contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
