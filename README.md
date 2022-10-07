@@ -6,8 +6,8 @@ This repository leverages the [Reddog codebase](https://github.com/Azure/reddog-
 
 This project framework provides the following features:
 
-* UI is hosted in [Azure App Service](https://azure.microsoft.com/en-us/products/app-service/)
-* Virtual Customers are hosted in [Azure Functions](https://azure.microsoft.com/en-us/products/functions/)
+* UI is hosted in [Azure App Service](https://azure.microsoft.com/en-us/products/app-service/), a fully managed service for creating enterprise-ready web and mobile apps for any platform or device quickly and easily with built-in infrastructure maintenance, security patching, and scaling.
+* Virtual Customers are hosted in [Azure Functions](https://azure.microsoft.com/en-us/products/functions/), a serverless computing service for creating event-driven, scalable serverless applications in .NET, Node.js, Python, Java, or PowerShell.
 * The rest of the micro services are hosted in [Azure Container Apps](https://azure.microsoft.com/en-us/services/container-apps/), a fully managed, serverless container service used to build and deploy modern apps at scale. In this solution, you're hosting all 10 microservices on Azure Container Apps and deploying them into a single Container App environment. This environment acts as a secure boundary around the system.
 * Integration between the UI, Virtual Customers, and Container Apps is handled by [API Management](https://azure.microsoft.com/en-us/products/api-management/), a hybrid, multicloud management platform for APIs across all environments.
 
@@ -118,7 +118,7 @@ To run the workflows, follow these steps:
   - `AZURE_LOCATION`: This is the Azure region where resources will be deployed
   - `AZURE_PROJECT_NAME`: This is the name that will be appended to Azure resources
   - `AZURE_UNIQUE_CODE`: This is a unique code that will be appended to Azure resources
-3. Go to [Actions](./actions/)
+3. Go to [Actions](../actions/)
 4. Click on the `Deploy Solution` action
 5. Click on `Run workflow` and select a branch
 
