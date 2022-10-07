@@ -1,6 +1,6 @@
 # Red Dog Demo: Azure Container Apps, Azure App Service, Azure Functions, and Azure API Management
 
-This repository leverages the [Reddog codebase](https://github.com/Azure/reddog-code) and was created to help users deploy a comprehensive, microservice-based sample application to Azure Container Apps, Azure App Service, Azure Functions, and Azure API Management.
+This repository leverages the [Reddog codebase](https://github.com/Azure/reddog-code) and the [Reddog Container Apps](https://github.com/Azure/reddog-containerapps) bicep modules. It was created to help users deploy a comprehensive, microservice-based sample application to [Azure Container Apps](https://azure.microsoft.com/en-us/services/container-apps/), [Azure App Service](https://azure.microsoft.com/en-us/products/app-service/), [Azure Functions](https://azure.microsoft.com/en-us/products/functions/), and [Azure API Management](https://azure.microsoft.com/en-us/products/api-management/).
 
 ## Features
 
@@ -8,8 +8,8 @@ This project framework provides the following features:
 
 * UI is hosted in [Azure App Service](https://azure.microsoft.com/en-us/products/app-service/)
 * Virtual Customers are hosted in [Azure Functions](https://azure.microsoft.com/en-us/products/functions/)
-* The rest of the micro services are hosted in [Azure Container Apps](https://azure.microsoft.com/en-us/services/container-apps/)
-* Integration between the UI, Virtual Customers, and Container Apps is handled by [API Management](https://azure.microsoft.com/en-us/products/api-management/)
+* The rest of the micro services are hosted in [Azure Container Apps](https://azure.microsoft.com/en-us/services/container-apps/), a fully managed, serverless container service used to build and deploy modern apps at scale. In this solution, you're hosting all 10 microservices on Azure Container Apps and deploying them into a single Container App environment. This environment acts as a secure boundary around the system.
+* Integration between the UI, Virtual Customers, and Container Apps is handled by [API Management](https://azure.microsoft.com/en-us/products/api-management/), a hybrid, multicloud management platform for APIs across all environments.
 
 ## Architecture
 
@@ -19,13 +19,14 @@ Below is the architecture  deployed in this demonstration.
 
 ### Additional Azure Services
 
-* [Azure Service Bus](https://azure.microsoft.com/en-us/products/service-bus/)
-* [Azure Cosmos Db](https://azure.microsoft.com/en-us/products/cosmos-db/)
-* [Azure Blob Storage](https://azure.microsoft.com/en-us/products/storage/blobs/)
-* [Azure SQL Database](https://azure.microsoft.com/en-us/products/azure-sql/database/)
-* [Azure Cache for Redis](https://azure.microsoft.com/en-ca/products/cache/)
-* [Azure Container Registry](https://azure.microsoft.com/en-ca/products/container-registry/)
-* [Azure Monitor](https://azure.microsoft.com/en-ca/products/monitor/)
+* [Azure resource groups](https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/manage-resource-groups-portal) are logical containers for Azure resources. You use a single resource group to structure everything related to this solution in the Azure portal.
+* [Azure Container Registry](https://azure.microsoft.com/en-ca/products/container-registry/), a registry of Docker and Open Container Initiative (OCI) images, with support for all OCI artifacts
+* [Azure Service Bus](https://azure.microsoft.com/services/service-bus) is a fully managed enterprise message broker complete with queues and publish-subscribe topics. In this solution, use it for the Dapr pub/sub component implementation. Multiple services use this component. The order service publishes messages on the bus, and the Makeline, accounting, loyalty, and receipt services subscribe to these messages.
+* [Azure Cosmos DB](https://azure.microsoft.com/services/cosmos-db) is a NoSQL, multi-model managed database service. Use it as a Dapr state store component for the loyalty service to store customer's loyalty data.
+* [Azure Cache for Redis](https://azure.microsoft.com/services/cache) is a distributed, in-memory, scalable managed Redis cache. It's used as a Dapr state store component for the Makeline Service to store data on the orders that are being processed.
+* [Azure SQL Database](https://azure.microsoft.com/products/azure-sql/database) is an intelligent, scalable, relational database service built for the cloud. Create it for the accounting service, which uses [Entity Framework Core](/ef/core/) to interface with the database. The Bootstrapper service is responsible for setting up the SQL tables in the database, and then runs once before establishing the connection to the accounting service.
+* [Azure Blob Storage](https://azure.microsoft.com/services/storage/blobs) stores massive amounts of unstructured data like text or binary files. The receipt service uses Blob Storage via a Dapr output binding to store the order receipts.
+* [Azure Monitor](https://azure.microsoft.com/services/monitor) enables you to collect, analyze, and act on customer content data from your Azure infrastructure environments. You'll use it with [Application Insights](/azure/azure-monitor/app/app-insights-overview) to view the container logs and collect metrics from the microservices.
 
 ## Benefits of this Architecture Sample
 
@@ -64,14 +65,41 @@ There are two deployment options:
 
 ### QuickStart Option
 
+A bash script is included for quickly provisioning a fully functional environment in Azure. The script requires the following parameters:
+
 ```
-git clone https://github.com/Azure-Samples/app-templates-eshop-on-paas.git
-cd app-templates-eshop-on-paas
+-n: The deployment name.
+-l: The region where resources will be deployed.
+-c: A unique string that will ensure all resources provisioned are globally unique.
+```
+> **NOTE:** Please refer to the [Resource Name Rules](https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/resource-name-rules#microsoftweb) to learn more about globally unique resources.
+
+Follow the steps below to quickly deploy using the bash script:
+
+1. Clone the repository to local machine.
+```
+git clone https://github.com/Azure-Samples/app-templates-microservices-integration.git
+```
+2. Switch to the cloned folder
+```
+cd app-templates-microservices-integration
+```
+
+3. Make the bash script executable
+```
 chmod +x ./deploy.sh
+```
+
+4. Login to Azure and ensure the correct subscription is selected
+```
 az login
 az account set --subscription <subscription id>
 az account show
-./deploy.sh -n demo -l eastus2 -c 4f6s1d
+```
+
+5. Run the script and provide required parameters
+```
+./deploy.sh -n demo -l eastus2 -c <unique code>
 ```
 
 ### GitHub Actions Option
@@ -81,23 +109,29 @@ GitHub workflows are included for deploying the solution to Azure.
 To run the workflows, follow these steps:
 
 1. Create three environments
-  - `Production`
-  - `Test`
-  - `Features` 
+  - `Production`: Commits to the `master` or `main` branch will trigger deployments to this environment.
+  - `Test`: Commits to the `dev` or `develop` branch will trigger deployments to this environment.
+  - `Features`: Commits to any branch under `features/` will trigger deployments to this environment.
+
 2. Create the following secrets
-  - `AZURE_CREDENTIALS`: Follow the instructions [here](github.com/marketplace/actions/azure-login#configure-a-service-principal-with-a-secret) to login using Azure Service Principal with a secret
-  - `AZURE_LOCATION`: This is the Azure location where resources will be deployed
+  - `AZURE_CREDENTIALS`: This secret will be used by GitHub actions to authenticate with Azure. Follow the instructions [here](github.com/marketplace/actions/azure-login#configure-a-service-principal-with-a-secret) to login using Azure Service Principal with a secret.
+  - `AZURE_LOCATION`: This is the Azure region where resources will be deployed
   - `AZURE_PROJECT_NAME`: This is the name that will be appended to Azure resources
   - `AZURE_UNIQUE_CODE`: This is a unique code that will be appended to Azure resources
-3. Go to [Actions](https://github.com/Azure-Samples/app-templates-eshop-on-paas/actions/)
-4. Click on `Deploy Solution`
-5. Click on `Run workflow`
+3. Go to [Actions](./actions/)
+4. Click on the `Deploy Solution` action
+5. Click on `Run workflow` and select a branch
 
 ## Enhancements Opportunities
 
-Below are opportunities for enhancements: 
+Below are opportunities for enhancements. Pull requests are welcome: 
 
 1. Restrict direct traffic to Container Apps, Azure Function, and APIM (e.g. using a VNet)
 2. Add WAF in front of the UI
-3. Add throttling policies to APIM APIs
+3. Add throttling and caching policies to APIM APIs
 4. Add subscriptions, products, and authentication scenarios
+
+
+## Next steps
+
+- [Azure Container Apps docs](/azure/container-apps)
