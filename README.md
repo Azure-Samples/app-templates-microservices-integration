@@ -53,6 +53,7 @@ Azure Container Apps also provides a managed version of [Kubernetes Event-driven
 
 1. Deploy microservices containers without needing to manage complex container orchestration infrastructure.
 1. Running containerized workloads on a serverless and consumption based platform that supports scale to zero.
+1. Autoscaling applications based on HTTP traffic or events supported by KEDA.
 1. Deploying APIs and exposing APIs to internal and external clients.
 1. API Management provides the publishing capability for HTTP APIs, to promote reuse and discoverability. It can manage other cross-cutting concerns such as authentication, throughput limits, and response caching.
 1. Continuous build to produce container images and deployment orchestration to increase speed and reliability of deployments.
@@ -192,9 +193,10 @@ az account show
 Below are opportunities for enhancements. Pull requests are welcome: 
 
 1. Restrict direct traffic to Container Apps, Azure Function, and APIM (e.g. using a VNet)
-2. Add WAF in front of the UI
-3. Add throttling and caching policies to APIM APIs
-4. Add subscriptions, products, and authentication scenarios
+1. Use [Azure Application Gateway](https://learn.microsoft.com/en-us/azure/application-gateway/overview) to manage traffic to the Web Application. Application Gateway can be [integrated with Microsoft Defender for Cloud](https://learn.microsoft.com/en-us/azure/defender-for-cloud/partner-integration#integrated-azure-security-solutions) to prevent, detect, and respond to threats. 
+1. Add throttling and caching policies to APIM APIs
+1. Add subscriptions, products, and authentication scenarios
+1. Use [Azure App Configuration](https://learn.microsoft.com/en-us/azure/azure-app-configuration/overview) and [Azure Key Vault](https://learn.microsoft.com/en-us/azure/key-vault/general/overview) for configuration and secret management
 
 
 ## Next steps
