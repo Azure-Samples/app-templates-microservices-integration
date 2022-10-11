@@ -8,7 +8,7 @@ This project framework provides the following features:
 
 - The User Interface (UI) is hosted in [Azure App Service](https://azure.microsoft.com/products/app-service/), a fully managed service for creating enterprise-ready web and mobile apps for any platform or device quickly and easily with built-in infrastructure maintenance, security patching, and scaling.
 - Virtual Customers are hosted in [Azure Functions](https://azure.microsoft.com/products/functions/), a serverless computing service for creating event-driven, scalable serverless applications in .NET, Node.js, Python, Java, or PowerShell.
-- The rest of the micro services are hosted in [Azure Container Apps](https://azure.microsoft.com/services/container-apps/), a fully managed, serverless container service used to build and deploy modern apps at scale. In this solution, you're hosting all 10 microservices on Azure Container Apps and deploying them into a single Container App environment. This environment acts as a secure boundary around the system.
+- The rest of the micro services are hosted in [Azure Container Apps](https://azure.microsoft.com/services/container-apps/), a fully managed, serverless container service used to build and deploy modern apps at scale. 
 - Integration between the UI, Virtual Customers, and Container Apps is handled by [API Management](https://azure.microsoft.com/products/api-management/), a hybrid, multicloud management platform for APIs across all environments.
 
 ## Architecture
@@ -22,6 +22,8 @@ Below is the architecture  deployed in this demonstration.
 - **[Azure Functions](https://azure.microsoft.com/services/functions)** is a serverless solution that allows you to focus more on blocks of code that can be executed with minimal infrastructure management. Functions can be hosted in [various hosting plans](/azure/azure-functions/functions-scale), whereas this reference architecture uses the premium plan, due to the use of private endpoints.
 
 - **[Azure API Management](https://azure.microsoft.com/services/api-management)** is a managed service that allows you to manage services across hybrid and multi-cloud environments. API management acts as a facade to abstract the backend architecture, and it provides control and security for API observability and consumption for both internal and external users.
+
+- **[Azure Container Apps](https://azure.microsoft.com/services/container-apps)** is a fully managed, serverless container service used to build and deploy modern apps at scale. In this solution, you're hosting microservices on Azure Container Apps and deploying them into a single Container App environment. This environment acts as a secure boundary around the system.
 
 ### Additional Azure Services
 
@@ -162,6 +164,7 @@ https://ui-reddog-<unique code>.azurewebsites.net
 
 ![RedDog Dashboard](assets/reddog-dashboard.png)
 
+> **NOTE:** The first time you load the dashboard, you may get a `504 - Gateway Timeout` error. Try again after a few minutes.
 
 ## Delete the Deployment
 
@@ -193,15 +196,14 @@ az account show
 Below are opportunities for enhancements. Pull requests are welcome: 
 
 1. Restrict direct traffic to Container Apps, Azure Function, and APIM (e.g. using a VNet)
-1. Use [Azure Application Gateway](https://learn.microsoft.com/en-us/azure/application-gateway/overview) to manage traffic to the Web Application. Application Gateway can be [integrated with Microsoft Defender for Cloud](https://learn.microsoft.com/en-us/azure/defender-for-cloud/partner-integration#integrated-azure-security-solutions) to prevent, detect, and respond to threats. 
-1. Add throttling and caching policies to APIM APIs
-1. Add subscriptions, products, and authentication scenarios
-1. Use [Azure App Configuration](https://learn.microsoft.com/en-us/azure/azure-app-configuration/overview) and [Azure Key Vault](https://learn.microsoft.com/en-us/azure/key-vault/general/overview) for configuration and secret management
+1. Use [Azure Application Gateway](https://learn.microsoft.com/azure/application-gateway/overview) to manage traffic to the Web Application. Application Gateway can be [integrated with Microsoft Defender for Cloud](https://learn.microsoft.com/azure/defender-for-cloud/partner-integration#integrated-azure-security-solutions) to prevent, detect, and respond to threats. 
+1. Add [throttling](https://learn.microsoft.com/azure/api-management/api-management-sample-flexible-throttling), [caching](https://learn.microsoft.com/azure/api-management/api-management-howto-cache) policies to APIM APIs
+1. Add [subscriptions](https://learn.microsoft.com/azure/api-management/api-management-subscriptions), [products](https://learn.microsoft.com/azure/api-management/api-management-howto-add-products), [authentication](https://learn.microsoft.com/azure/api-management/authentication-authorization-overview), and [authorization](https://learn.microsoft.com/azure/api-management/authorizations-overview)
+1. Use [Azure App Configuration](https://learn.microsoft.com/azure/azure-app-configuration/overview) and [Azure Key Vault](https://learn.microsoft.com/azure/key-vault/general/overview) for configuration and secret management
 
 
 ## Next steps
 
-- [Azure Container Apps docs](/azure/container-apps)
 - Other Reddog order management system implementations:
   - [Container Apps deployment](https://github.com/Azure/reddog-containerapps)
   - [Azure Arc hybrid deployment](https://github.com/Azure/reddog-hybrid-arc)
@@ -211,8 +213,9 @@ Below are opportunities for enhancements. Pull requests are welcome:
 
 ## Related resources
 
+- [Azure Container Apps docs](https://learn.microsoft.com/azure/container-apps/)
 - [Deploy microservices with Azure Container Apps and Dapr](https://learn.microsoft.com/azure/architecture/example-scenario/serverless/microservices-with-container-apps-dapr)
-- [Integration architecture design](https://learn.microsoft.com/en-us/azure/architecture/integration/integration-start-here)
+- [Integration architecture design](https://learn.microsoft.com/azure/architecture/integration/integration-start-here)
 
 ## Contributing
 
