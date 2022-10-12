@@ -49,21 +49,28 @@ This architecture uses Azure Container Apps integration with a managed version o
 
 Azure Container Apps also provides a managed version of [Kubernetes Event-driven Autoscaling (KEDA)](https://keda.sh/). KEDA lets your containers autoscale based on incoming events from external services like Azure Service Bus and Azure Cache for Redis.
 
+## Additional Technologies
+
+- **[GitHub Actions](https://docs.github.com/en/free-pro-team@latest/actions)** helps you automate your software development workflows from within GitHub. In GitHub Actions, a [workflow](https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/introduction-to-github-actions) is an automated process that you set up in your GitHub repository. Each workflow is made up of individual [actions](https://docs.github.com/en/actions/learn-github-actions/introduction-to-github-actions) that run after a specific event (like a pull request) occur.
+
+- **[GitHub Actions for Azure](https://learn.microsoft.com/azure/developer/github/github-actions)** are developed by Microsoft and designed to be used with Azure. You can see all of the GitHub Actions for Azure in the [GitHub Marketplace](https://github.com/marketplace?query=Azure&type=actions). With GitHub Actions for Azure, you can create workflows that you can set up in your repository to build, test, package, release, and deploy to Azure. GitHub Actions for Azure supports Azure services, including Azure App Service, Azure Functions, and Azure Key Vault. See [Finding and customizing actions](https://docs.github.com/en/actions/learn-github-actions/finding-and-customizing-actions) to learn more about incorporating actions into your workflows. 
+
+- **[GitHub Reusable Workflows](https://docs.github.com/en/actions/using-workflows/reusing-workflows)** make workflows easier to maintain and allows you to create new workflows more quickly by building on the work of others, rather than copying and pasting from one workflow to another. Workflow reuse also promotes best practice by helping you to use workflows that are well designed, have already been tested, and have been proven to be effective. Your organization can build up a library of reusable workflows that can be centrally maintained.
+
+- **[Bicep](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/overview)** is a domain-specific language (DSL) that uses declarative syntax to deploy Azure resources. In a Bicep file, you define the infrastructure you want to deploy to Azure, and then use that file throughout the development lifecycle to repeatedly deploy your infrastructure. Your resources are deployed in a consistent manner. Bicep provides concise syntax, reliable type safety, and support for code reuse. Bicep offers a first-class authoring experience for your [infrastructure-as-code](https://learn.microsoft.com/en-us/devops/deliver/what-is-infrastructure-as-code) solutions in Azure.
+
+
 ## Benefits of this Architecture Sample
 
 ### Benefits
 
-1. Deploy microservices containers without needing to manage complex container orchestration infrastructure.
-1. Running containerized workloads on a serverless and consumption based platform that supports scale to zero.
-1. Autoscaling applications based on HTTP traffic or events supported by KEDA.
+1. Deploy [microservices](https://learn.microsoft.com/en-us/azure/architecture/microservices/) containers without needing to manage complex container orchestration infrastructure.
+1. Running containerized workloads on a [serverless](https://learn.microsoft.com/en-us/dotnet/architecture/serverless/serverless-architecture) and consumption based platform that supports scale to zero.
+1. Autoscaling applications based on HTTP traffic or events supported by [KEDA](https://keda.sh/).
 1. Deploying APIs and exposing APIs to internal and external clients.
-1. API Management provides the publishing capability for HTTP APIs, to promote reuse and discoverability. It can manage other cross-cutting concerns such as authentication, throughput limits, and response caching.
-1. Continuous build to produce container images and deployment orchestration to increase speed and reliability of deployments.
-
-### Potential Extensions and Alternatives
-
-1. [Deploy microservices with Azure Container Apps and Dapr](https://learn.microsoft.com/azure/architecture/example-scenario/serverless/microservices-with-container-apps-dapr)
-1. [Deploy microservices with Azure Container Apps](https://learn.microsoft.com/azure/architecture/example-scenario/serverless/microservices-with-container-apps)
+1. API Management provides the publishing capability for HTTP APIs, to promote reuse and discoverability. It can manage other cross-cutting concerns such as [authentication](https://learn.microsoft.com/en-us/azure/api-management/api-management-access-restriction-policies), [throughput limits](https://learn.microsoft.com/azure/api-management/api-management-sample-flexible-throttling), and [response caching](https://learn.microsoft.com/azure/api-management/api-management-howto-cache).
+1. [Continuous Integration (CI)](https://learn.microsoft.com/en-us/devops/develop/what-is-continuous-integration) to produce container images and [Continuous Deployment (CD)](https://learn.microsoft.com/en-us/devops/deliver/what-is-continuous-delivery) to increase speed and reliability of deployments.
+1. [Infrastructure as Code (IaC)](https://learn.microsoft.com/en-us/devops/deliver/what-is-infrastructure-as-code) avoids manual configuration and enforces consistency by representing desired environment states via well-documented code in formats such as JSON. Infrastructure deployments with IaC are repeatable and prevent runtime issues caused by configuration drift or missing dependencies.
 
 ## Getting Started
 
@@ -214,6 +221,7 @@ Below are opportunities for enhancements. Pull requests are welcome:
 ## Related resources
 
 - [Azure Container Apps docs](https://learn.microsoft.com/azure/container-apps/)
+- [Deploy microservices with Azure Container Apps](https://learn.microsoft.com/azure/architecture/example-scenario/serverless/microservices-with-container-apps)
 - [Deploy microservices with Azure Container Apps and Dapr](https://learn.microsoft.com/azure/architecture/example-scenario/serverless/microservices-with-container-apps-dapr)
 - [Integration architecture design](https://learn.microsoft.com/azure/architecture/integration/integration-start-here)
 
