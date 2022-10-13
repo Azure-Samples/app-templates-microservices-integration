@@ -97,30 +97,30 @@ A bash script is included for quickly provisioning a fully functional environmen
 Follow the steps below to quickly deploy using the bash script:
 
 1. Clone the repository to local machine.
-```
-git clone https://github.com/Azure-Samples/app-templates-microservices-integration.git
-```
-2. Switch to the cloned folder
-```
-cd app-templates-microservices-integration
-```
+    ```
+    git clone https://github.com/Azure-Samples/app-templates-microservices-integration.git
+    ```
+1. Switch to the cloned folder
+    ```
+    cd app-templates-microservices-integration
+    ```
 
-3. Make the bash script executable
-```
-chmod +x ./deploy.sh
-```
+1. Make the bash script executable
+    ```
+    chmod +x ./deploy.sh
+    ```
 
-4. Login to Azure and ensure the correct subscription is selected
-```
-az login
-az account set --subscription <subscription id>
-az account show
-```
+1. Login to Azure and ensure the correct subscription is selected
+    ```
+    az login
+    az account set --subscription <subscription id>
+    az account show
+    ```
 
-5. Run the script and provide required parameters
-```
-./deploy.sh -n demo -l eastus2 -c <unique code>
-```
+1. Run the script and provide required parameters
+    ```
+    ./deploy.sh -n demo -l eastus2 -c <unique code>
+    ```
 
 ### GitHub Actions Option
 
@@ -129,18 +129,17 @@ GitHub workflows are included for deploying the solution to Azure.
 To run the workflows, follow these steps:
 
 1. Create three environments
-  - `Production`: Commits to the `master` or `main` branch will trigger deployments to this environment.
-  - `Test`: Commits to the `dev` or `develop` branch will trigger deployments to this environment.
-  - `Features`: Commits to any branch under `features/` will trigger deployments to this environment.
-
-2. Create the following secrets
-  - `AZURE_CREDENTIALS`: This secret will be used by GitHub actions to authenticate with Azure. Follow the instructions [here](github.com/marketplace/actions/azure-login#configure-a-service-principal-with-a-secret) to login using Azure Service Principal with a secret.
-  - `AZURE_LOCATION`: This is the Azure region where resources will be deployed
-  - `AZURE_PROJECT_NAME`: This is the name that will be appended to Azure resources
-  - `AZURE_UNIQUE_CODE`: This is a unique code that will be appended to Azure resources
-3. Go to [Actions](../actions/)
-4. Click on the `Deploy Solution` action
-5. Click on `Run workflow` and select a branch
+    - `Production`: Commits to the `master` or `main` branch will trigger deployments to this environment.
+    - `Test`: Commits to the `dev` or `develop` branch will trigger deployments to this environment.
+    - `Features`: Commits to any branch under `features/` will trigger deployments to this environment.
+1. Create the following secrets
+    - `AZURE_CREDENTIALS`: This secret will be used by GitHub actions to authenticate with Azure. Follow the instructions [here](github.com/marketplace/actions/azure-login#configure-a-service-principal-with-a-secret) to login using Azure Service Principal with a secret.
+    - `AZURE_LOCATION`: This is the Azure region where resources will be deployed
+    - `AZURE_PROJECT_NAME`: This is the name that will be appended to Azure resources
+    - `AZURE_UNIQUE_CODE`: This is a unique code that will be appended to Azure resources
+1. Go to [Actions](../actions/)
+1. Click on the `Deploy Solution` action
+1. Click on `Run workflow` and select a branch
 
 ### Verifying Deployment
 
@@ -148,20 +147,26 @@ When the deployment completes.
 
 1. Navigate to the [resource group](https://learn.microsoft.com/azure/azure-resource-manager/management/manage-resource-groups-portal) in the [Azure Portal](https://portal.azure.com). You should see a list of resources that looks something like this:
 
-![Deployed Resources](assets/deployed-resources.png)
+    ![Deployed Resources](assets/deployed-resources.png)
 
-> **NOTE:** In the image above `0ef88b` is the unique code supplied to `deploy.sh` or stored in the `AZURE_UNIQUE_CODE` secret.
+    > **NOTE:** In the image above `0ef88b` is the unique code supplied to `deploy.sh` or stored in the `AZURE_UNIQUE_CODE` secret. 
 
-2. Click on the UI [App Service](https://learn.microsoft.com/azure/app-service/overview) resource named `ui-reddog-<unique code>`. In the Overview tab, the URL of the User Interface is displayed as follows:
+1. Click on the UI [App Service](https://learn.microsoft.com/azure/app-service/overview) resource named `ui-reddog-<unique code>`. In the Overview tab, the URL of the User Interface is displayed as follows:
 
-```
-https://ui-reddog-<unique code>.azurewebsites.net
-```
+    ```
+    https://ui-reddog-<unique code>.azurewebsites.net
+    ```
 
-3. Click on the URL to open up a dashboard UI. After a few minutes, the screen should look something like the screen below:
+1. Click on the URL to open up a dashboard UI. After a few minutes, the screen should look something like the screen below:
 
-![RedDog Dashboard](assets/reddog-dashboard.png)
+    ![RedDog Dashboard](assets/reddog-dashboard.png)
 
+1. The Virtual Customer is simulating customer orders periodically. To submit an order you can use the following curl command in a bash shell to send a request to API Management.
+
+    ```bash
+    curl -X POST https://<Your APIM Gateway URL>/order/ -H 'Content-Type: application/json' -d '{"storeId": "Redmond", "firstName": "John Hannibal", "lastName": "Smith", "loyaltyId": "42", "orderItems": [{"productId": 1, "quantity": 1}, { "productId": 2, "quantity": 1}, {"productId": 3, "quantity": 3}]}'
+
+    ```
 
 ## Delete the Deployment
 
@@ -195,13 +200,12 @@ Below are opportunities for enhancements. Pull requests are welcome:
 1. Restrict direct traffic to Container Apps, Azure Function, and APIM (e.g. using a VNet)
 1. Use [Azure Application Gateway](https://learn.microsoft.com/en-us/azure/application-gateway/overview) to manage traffic to the Web Application. Application Gateway can be [integrated with Microsoft Defender for Cloud](https://learn.microsoft.com/en-us/azure/defender-for-cloud/partner-integration#integrated-azure-security-solutions) to prevent, detect, and respond to threats. 
 1. Add throttling and caching policies to APIM APIs
-1. Add subscriptions, products, and authentication scenarios
+1. Add subscriptions, products, and authentication scenarios for API Management. 
 1. Use [Azure App Configuration](https://learn.microsoft.com/en-us/azure/azure-app-configuration/overview) and [Azure Key Vault](https://learn.microsoft.com/en-us/azure/key-vault/general/overview) for configuration and secret management
 
 
 ## Next steps
 
-- [Azure Container Apps docs](/azure/container-apps)
 - Other Reddog order management system implementations:
   - [Container Apps deployment](https://github.com/Azure/reddog-containerapps)
   - [Azure Arc hybrid deployment](https://github.com/Azure/reddog-hybrid-arc)
@@ -213,6 +217,7 @@ Below are opportunities for enhancements. Pull requests are welcome:
 
 - [Deploy microservices with Azure Container Apps and Dapr](https://learn.microsoft.com/azure/architecture/example-scenario/serverless/microservices-with-container-apps-dapr)
 - [Integration architecture design](https://learn.microsoft.com/en-us/azure/architecture/integration/integration-start-here)
+- [Azure Container Apps docs](/azure/container-apps)
 
 ## Contributing
 
