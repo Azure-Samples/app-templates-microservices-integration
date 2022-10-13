@@ -62,8 +62,6 @@ Azure Container Apps also provides a managed version of [Kubernetes Event-driven
 
 ## Benefits of this Architecture Sample
 
-### Benefits
-
 1. Deploy [microservices](https://learn.microsoft.com/en-us/azure/architecture/microservices/) containers without needing to manage complex container orchestration infrastructure.
 1. Running containerized workloads on a [serverless](https://learn.microsoft.com/en-us/dotnet/architecture/serverless/serverless-architecture) and consumption based platform that supports scale to zero.
 1. Autoscaling applications based on HTTP traffic or events supported by [KEDA](https://keda.sh/).
@@ -144,7 +142,7 @@ To run the workflows, follow these steps:
 1. Create the following secrets
     - `AZURE_CREDENTIALS`: This secret will be used by GitHub actions to authenticate with Azure. Follow the instructions [here](github.com/marketplace/actions/azure-login#configure-a-service-principal-with-a-secret) to login using Azure Service Principal with a secret.
     - `AZURE_LOCATION`: This is the Azure region where resources will be deployed
-    - `AZURE_PROJECT_NAME`: This is the name that will be appended to Azure resources
+    - `AZURE_PREFIX`: This is the name that will be appended to Azure resources
     - `AZURE_UNIQUE_CODE`: This is a unique code that will be appended to Azure resources
 1. Go to [Actions](../actions/)
 1. Click on the `Deploy Solution` action
@@ -170,13 +168,15 @@ When the deployment completes.
 
     ![RedDog Dashboard](assets/reddog-dashboard.png)
 
+    > **NOTE:** The first time you load the dashboard, you may get a `504 - Gateway Timeout` error. Try again after a few minutes.
+
 1. The Virtual Customer is simulating customer orders periodically. To submit an order you can use the following curl command in a bash shell to send a request to API Management.
 
     ```bash
     curl -X POST https://<Your APIM Gateway URL>/order/ -H 'Content-Type: application/json' -d '{"storeId": "Redmond", "firstName": "John Hannibal", "lastName": "Smith", "loyaltyId": "42", "orderItems": [{"productId": 1, "quantity": 1}, { "productId": 2, "quantity": 1}, {"productId": 3, "quantity": 3}]}'
 
     ```
-> **NOTE:** The first time you load the dashboard, you may get a `504 - Gateway Timeout` error. Try again after a few minutes.
+
 
 ## Delete the Deployment
 
@@ -229,7 +229,6 @@ Below are opportunities for enhancements. Pull requests are welcome:
 - [Deploy microservices with Azure Container Apps](https://learn.microsoft.com/azure/architecture/example-scenario/serverless/microservices-with-container-apps)
 - [Deploy microservices with Azure Container Apps and Dapr](https://learn.microsoft.com/azure/architecture/example-scenario/serverless/microservices-with-container-apps-dapr)
 - [Integration architecture design](https://learn.microsoft.com/en-us/azure/architecture/integration/integration-start-here)
-- [Azure Container Apps docs](/azure/container-apps)
 
 ## Contributing
 
