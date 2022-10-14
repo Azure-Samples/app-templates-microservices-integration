@@ -1,0 +1,559 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build OrderService",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/src/RedDog.OrderService",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "dependsOn": "Dapr OrderService",
+            "problemMatcher": "$msCompile",
+            "group": "build"
+        },
+        {
+            "label": "Build MakeLineService",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/src/RedDog.MakeLineService",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "dependsOn": "Dapr MakeLineService",
+            "problemMatcher": "$msCompile",
+            "group": "build"
+        },
+        {
+            "label": "Build ReceiptGenerationService",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/src/RedDog.ReceiptGenerationService",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "dependsOn": "Dapr ReceiptGenerationService",
+            "problemMatcher": "$msCompile",
+            "group": "build"
+        },
+        {
+            "label": "Build LoyaltyService",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/src/RedDog.LoyaltyService",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "dependsOn": "Dapr LoyaltyService",
+            "problemMatcher": "$msCompile",
+            "group": "build"
+        },
+        {
+            "label": "Build VirtualWorker",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/src/RedDog.VirtualWorker",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "dependsOn": "Dapr VirtualWorker",
+            "problemMatcher": "$msCompile",
+            "group": "build"
+        },
+        {
+            "label": "Build VirtualCustomers",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/src/RedDog.VirtualCustomers",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "dependsOn": "Dapr VirtualCustomers",
+            "problemMatcher": "$msCompile",
+            "group": "build"
+        },
+        {
+            "label": "Optimize DBContext",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "ef",
+                "dbcontext",
+                "optimize",
+                "-p",
+                "${workspaceFolder}/src/RedDog.AccountingService",
+                "-n",
+                "RedDog.AccountingModel",
+                "-o",
+                "${workspaceFolder}/src/RedDog.AccountingModel/CompiledModels",
+                "-c",
+                "AccountingContext"
+            ],
+            "options": {
+                "env": {
+                    "DAPR_GRPC_PORT": "5701"
+                }
+            },
+            "problemMatcher": "$msCompile",
+            "dependsOn": "Dapr AccountingService",
+            "group": "build"
+        },
+        {
+            "label": "Build AccountingService",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/src/RedDog.AccountingService",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile",
+            "dependsOn": "Optimize DBContext",
+            "group": "build"
+        },
+        {
+            "label": "Build Bootstrapper",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/src/RedDog.Bootstrapper",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "dependsOn": "Dapr Bootstrapper",
+            "problemMatcher": "$msCompile",
+            "group": "build"
+        },
+        {
+            "label": "Build Solution",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/src",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "Dapr OrderService",
+            "command": "dapr",
+            "args": [
+                "run",
+                "--app-id",
+                "order-service",
+                "--components-path",
+                "${workspaceFolder}/manifests/local/branch",
+                "--app-port",
+                "5100",
+                "--dapr-grpc-port",
+                "5101",
+                "--dapr-http-port",
+                "5180"
+            ],
+            "isBackground": true,
+            "problemMatcher": {
+                "pattern": [
+                    {
+                        "regexp": ".",
+                        "file": 1,
+                        "location": 2,
+                        "message": 3
+                    }
+                ],
+                "background": {
+                    "beginsPattern": "^.*Starting Dapr.*",
+                    "endsPattern": "^.*You're up and running!.*"
+                }
+            }
+        },
+        {
+            "label": "Dapr MakeLineService",
+            "command": "dapr",
+            "args": [
+                "run",
+                "--app-id",
+                "make-line-service",
+                "--components-path",
+                "${workspaceFolder}/manifests/local/branch",
+                "--app-port",
+                "5200",
+                "--dapr-grpc-port",
+                "5201",
+                "--dapr-http-port",
+                "5280"
+            ],
+            "isBackground": true,
+            "problemMatcher": {
+                "pattern": [
+                    {
+                        "regexp": ".",
+                        "file": 1,
+                        "location": 2,
+                        "message": 3
+                    }
+                ],
+                "background": {
+                    "beginsPattern": "^.*Starting Dapr.*",
+                    "endsPattern": "^.*You're up and running!.*"
+                }
+            }
+        },
+        {
+            "label": "Dapr ReceiptGenerationService",
+            "command": "dapr",
+            "args": [
+                "run",
+                "--app-id",
+                "receipt-generation-service",
+                "--components-path",
+                "${workspaceFolder}/manifests/local/branch",
+                "--app-port",
+                "5300",
+                "--dapr-grpc-port",
+                "5301",
+                "--dapr-http-port",
+                "5380"
+            ],
+            "isBackground": true,
+            "problemMatcher": {
+                "pattern": [
+                    {
+                        "regexp": ".",
+                        "file": 1,
+                        "location": 2,
+                        "message": 3
+                    }
+                ],
+                "background": {
+                    "beginsPattern": "^.*Starting Dapr.*",
+                    "endsPattern": "^.*You're up and running!.*"
+                }
+            }
+        },
+        {
+            "label": "Dapr LoyaltyService",
+            "command": "dapr",
+            "args": [
+                "run",
+                "--app-id",
+                "loyalty-service",
+                "--components-path",
+                "${workspaceFolder}/manifests/local/branch",
+                "--app-port",
+                "5400",
+                "--dapr-grpc-port",
+                "5401",
+                "--dapr-http-port",
+                "5480"
+            ],
+            "isBackground": true,
+            "problemMatcher": {
+                "pattern": [
+                    {
+                        "regexp": ".",
+                        "file": 1,
+                        "location": 2,
+                        "message": 3
+                    }
+                ],
+                "background": {
+                    "beginsPattern": "^.*Starting Dapr.*",
+                    "endsPattern": "^.*You're up and running!.*"
+                }
+            }
+        },
+        {
+            "label": "Dapr AccountingService",
+            "command": "dapr",
+            "args": [
+                "run",
+                "--app-id",
+                "accounting-service",
+                "--components-path",
+                "${workspaceFolder}/manifests/local/branch",
+                "--app-port",
+                "5700",
+                "--dapr-grpc-port",
+                "5701",
+                "--dapr-http-port",
+                "5780"
+            ],
+            "isBackground": true,
+            "problemMatcher": {
+                "pattern": [
+                    {
+                        "regexp": ".",
+                        "file": 1,
+                        "location": 2,
+                        "message": 3
+                    }
+                ],
+                "background": {
+                    "beginsPattern": "^.*Starting Dapr.*",
+                    "endsPattern": "^.*You're up and running!.*"
+                }
+            }
+        },
+        {
+            "label": "Dapr AccountingService (Corp)",
+            "command": "dapr",
+            "args": [
+                "run",
+                "--app-id",
+                "accounting-service-corp",
+                "--components-path",
+                "${workspaceFolder}/manifests/local/corporate",
+                "--app-port",
+                "6700",
+                "--dapr-grpc-port",
+                "6701",
+                "--dapr-http-port",
+                "6780"
+            ],
+            "isBackground": true,
+            "problemMatcher": {
+                "pattern": [
+                    {
+                        "regexp": ".",
+                        "file": 1,
+                        "location": 2,
+                        "message": 3
+                    }
+                ],
+                "background": {
+                    "beginsPattern": "^.*Starting Dapr.*",
+                    "endsPattern": "^.*You're up and running!.*"
+                }
+            }
+        },
+        {
+            "label": "Dapr VirtualWorker",
+            "command": "dapr",
+            "args": [
+                "run",
+                "--app-id",
+                "virtual-worker",
+                "--components-path",
+                "${workspaceFolder}/manifests/local/branch",
+                "--app-port",
+                "5500",
+                "--dapr-grpc-port",
+                "5501",
+                "--dapr-http-port",
+                "5580"
+            ],
+            "isBackground": true,
+            "problemMatcher": {
+                "pattern": [
+                    {
+                        "regexp": ".",
+                        "file": 1,
+                        "location": 2,
+                        "message": 3
+                    }
+                ],
+                "background": {
+                    "beginsPattern": "^.*Starting Dapr.*",
+                    "endsPattern": "^.*You're up and running!.*"
+                }
+            }
+        },
+        {
+            "label": "Dapr VirtualCustomers",
+            "command": "dapr",
+            "args": [
+                "run",
+                "--app-id",
+                "virtual-customers",
+                "--components-path",
+                "${workspaceFolder}/manifests/local/branch",
+                "--dapr-grpc-port",
+                "5601",
+                "--dapr-http-port",
+                "5680"
+            ],
+            "isBackground": true,
+            "problemMatcher": {
+                "pattern": [
+                    {
+                        "regexp": ".",
+                        "file": 1,
+                        "location": 2,
+                        "message": 3
+                    }
+                ],
+                "background": {
+                    "beginsPattern": "^.*Starting Dapr.*",
+                    "endsPattern": "^.*You're up and running!.*"
+                }
+            }
+        },
+        {
+            "label": "Dapr UI",
+            "command": "dapr",
+            "args": [
+                "run",
+                "--app-id",
+                "reddog-ui",
+                "--components-path",
+                "${workspaceFolder}/manifests/local/branch",
+                "--dapr-grpc-port",
+                "5901",
+                "--dapr-http-port",
+                "5980"
+            ],
+            "isBackground": true,
+            "problemMatcher": {
+                "pattern": [
+                    {
+                        "regexp": ".",
+                        "file": 1,
+                        "location": 2,
+                        "message": 3
+                    }
+                ],
+                "background": {
+                    "beginsPattern": "^.*Starting Dapr.*",
+                    "endsPattern": "^.*You're up and running!.*"
+                }
+            }
+        },
+        {
+            "label": "Dapr Bootstrapper",
+            "command": "dapr",
+            "args": [
+                "run",
+                "--app-id",
+                "bootstrapper",
+                "--components-path",
+                "${workspaceFolder}/manifests/local/branch",
+                "--dapr-grpc-port",
+                "5801",
+                "--dapr-http-port",
+                "5880"
+            ],
+            "isBackground": true,
+            "problemMatcher": {
+                "pattern": [
+                    {
+                        "regexp": ".",
+                        "file": 1,
+                        "location": 2,
+                        "message": 3
+                    }
+                ],
+                "background": {
+                    "beginsPattern": "^.*Starting Dapr.*",
+                    "endsPattern": "^.*You're up and running!.*"
+                }
+            }
+        },
+        {
+            "label": "Dapr Stop OrderService",
+            "command": "dapr",
+            "args": [
+                "stop",
+                "order-service"
+            ]
+        },
+        {
+            "label": "Dapr Stop MakeLineService",
+            "command": "dapr",
+            "args": [
+                "stop",
+                "make-line-service"
+            ]
+        },
+        {
+            "label": "Dapr Stop LoyaltyService",
+            "command": "dapr",
+            "args": [
+                "stop",
+                "loyalty-service"
+            ]
+        },
+        {
+            "label": "Dapr Stop ReceiptGenerationService",
+            "command": "dapr",
+            "args": [
+                "stop",
+                "receipt-generation-service"
+            ]
+        },
+        {
+            "label": "Dapr Stop AccountingService",
+            "command": "dapr",
+            "args": [
+                "stop",
+                "accounting-service"
+            ]
+        },
+        {
+            "label": "Dapr Stop VirtualWorker",
+            "command": "dapr",
+            "args": [
+                "stop",
+                "virtual-worker"
+            ]
+        },
+        {
+            "label": "Dapr Stop VirtualCustomers",
+            "command": "dapr",
+            "args": [
+                "stop",
+                "virtual-customers"
+            ]
+        },
+        {
+            "label": "Dapr Stop UI",
+            "command": "dapr",
+            "args": [
+                "stop",
+                "reddog-ui"
+            ]
+        },
+        {
+            "label": "Dapr Stop Bootstrapper",
+            "command": "dapr",
+            "args": [
+                "stop",
+                "bootstrapper"
+            ]
+        },
+        {
+            "label": "Dapr (All Services)",
+            "dependsOn": [
+                "Dapr OrderService",
+                "Dapr MakeLineService",
+                "Dapr LoyaltyService",
+                "Dapr ReceiptGenerationService",
+                "Dapr AccountingService",
+                "Dapr VirtualWorker",
+                "Dapr VirtualCustomers",
+                "Dapr UI"
+            ],
+            "problemMatcher": []
+        }
+    ]
+}

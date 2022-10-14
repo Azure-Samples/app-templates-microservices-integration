@@ -1,0 +1,275 @@
+# This workflow deploys the full solution
+
+name: Deploy Solution
+
+on:
+  workflow_dispatch:
+
+jobs:
+
+  environment:
+    name: Determine Environment Name
+    uses: ./.github/workflows/environment-name.yaml     
+
+  validate:
+    needs: [environment]
+    name: Validate Environment Secrets
+    uses: ./.github/workflows/validate-secrets.yaml
+    with:
+      environment: ${{ needs.environment.outputs.name }}
+    secrets: 
+      AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+      AZURE_SUFFIX: ${{ secrets.AZURE_SUFFIX }}
+      AZURE_UNIQUE_CODE: ${{ secrets.AZURE_UNIQUE_CODE }}
+      AZURE_LOCATION: ${{ secrets.AZURE_LOCATION }}
+
+  group:
+    needs: [environment, validate]
+    name: Provision Resource Group 
+    runs-on: ubuntu-latest
+    outputs:
+      name: ${{ steps.resource.outputs.name }}
+    environment: 
+      name: ${{ needs.environment.outputs.name }}
+
+    steps:
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Create Group
+        id: resource
+        run: |
+          az group create --name $RESOURCE_GROUP \
+                          --location ${{ secrets.AZURE_LOCATION }} \
+                          --query name
+        env:
+          RESOURCE_GROUP: ${{ needs.environment.outputs.name }}-${{ secrets.AZURE_SUFFIX }}-${{ secrets.AZURE_UNIQUE_CODE }}
+  
+  apim:
+    needs: [environment, group]
+    name: Provision APIM 
+    runs-on: ubuntu-latest
+    outputs:
+      name: ${{ steps.resource.outputs.name }}
+    environment: 
+      name: ${{ needs.environment.outputs.name }}
+    
+    steps:
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Create Resource
+        id: resource
+        run: |
+          az apim create --name apim-${{ secrets.AZURE_SUFFIX }}-${{ secrets.AZURE_UNIQUE_CODE }} \
+                                  --resource-group $RESOURCE_GROUP \
+                                  --location ${{ secrets.AZURE_LOCATION }} \
+                                  --publisher-email apim@contoso.com \
+                                  --publisher-name Contoso \
+                                  --sku-name Developer \
+                                  --sku-capacity 1
+        env:
+          RESOURCE_GROUP: ${{ needs.environment.outputs.name }}-${{ secrets.AZURE_SUFFIX }}-${{ secrets.AZURE_UNIQUE_CODE }}
+  
+  registry:
+    needs: [environment, group]
+    name: Provision ACR 
+    runs-on: ubuntu-latest
+    environment: 
+      name: ${{ needs.environment.outputs.name }}
+
+    steps:
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Create Registry
+        id: resource
+        run: |
+          az acr create --resource-group $RESOURCE_GROUP \
+                        --name $REGISTRY_NAME \
+                        --sku Basic \
+                        --admin-enabled true
+        env:
+          RESOURCE_GROUP: ${{ needs.environment.outputs.name }}-${{ secrets.AZURE_SUFFIX }}-${{ secrets.AZURE_UNIQUE_CODE }}
+          REGISTRY_NAME: acr${{ secrets.AZURE_SUFFIX }}${{ secrets.AZURE_UNIQUE_CODE }}
+
+  build-accounting:
+    needs: [environment,registry]
+    name: Build Accounting Service
+    uses: ./.github/workflows/build-service.yaml
+    with:
+      environment: ${{ needs.environment.outputs.name }}
+      project: RedDog.AccountingService
+      context: ./src
+      repository: reddog
+      image: accounting-service
+      skipExisting: true
+    secrets: 
+      AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+      AZURE_SUFFIX: ${{ secrets.AZURE_SUFFIX }}
+      AZURE_UNIQUE_CODE: ${{ secrets.AZURE_UNIQUE_CODE }}  
+
+  build-bootstrapper:
+    needs: [environment,registry]
+    name: Build Bootstrapper
+    uses: ./.github/workflows/build-service.yaml
+    with:
+      environment: ${{ needs.environment.outputs.name }}
+      project: RedDog.Bootstrapper
+      context: ./src
+      repository: reddog
+      image: bootstrapper
+      skipExisting: true
+    secrets: 
+      AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+      AZURE_SUFFIX: ${{ secrets.AZURE_SUFFIX }}
+      AZURE_UNIQUE_CODE: ${{ secrets.AZURE_UNIQUE_CODE }}  
+
+  build-corporate-transfer:
+    needs: [environment,registry]
+    name: Build Corporate Transfer Service
+    uses: ./.github/workflows/build-service.yaml
+    with:
+      environment: ${{ needs.environment.outputs.name }}
+      project: RedDog.CorporateTransferService
+      context: ./src
+      repository: reddog
+      image: corporate-transfer
+      skipExisting: true
+    secrets: 
+      AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+      AZURE_SUFFIX: ${{ secrets.AZURE_SUFFIX }}
+      AZURE_UNIQUE_CODE: ${{ secrets.AZURE_UNIQUE_CODE }}  
+
+  build-loyalty-service:
+    needs: [environment,registry]
+    name: Build Loyalty Service
+    uses: ./.github/workflows/build-service.yaml
+    with:
+      environment: ${{ needs.environment.outputs.name }}
+      project: RedDog.LoyaltyService
+      context: ./src
+      repository: reddog
+      image: loyalty-service
+      skipExisting: true
+    secrets: 
+      AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+      AZURE_SUFFIX: ${{ secrets.AZURE_SUFFIX }}
+      AZURE_UNIQUE_CODE: ${{ secrets.AZURE_UNIQUE_CODE }}  
+
+  build-makeline-service:
+    needs: [environment,registry]
+    name: Build MakeLine Service
+    uses: ./.github/workflows/build-service.yaml
+    with:
+      environment: ${{ needs.environment.outputs.name }}
+      project: RedDog.MakeLineService
+      context: ./src
+      repository: reddog
+      image: make-line
+      skipExisting: true
+    secrets: 
+      AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+      AZURE_SUFFIX: ${{ secrets.AZURE_SUFFIX }}
+      AZURE_UNIQUE_CODE: ${{ secrets.AZURE_UNIQUE_CODE }}  
+
+  build-order-service:
+    needs: [environment,registry]
+    name: Build Order Service
+    uses: ./.github/workflows/build-service.yaml
+    with:
+      environment: ${{ needs.environment.outputs.name }}
+      project: RedDog.OrderService
+      context: ./src
+      repository: reddog
+      image: order-service
+      skipExisting: true
+    secrets: 
+      AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+      AZURE_SUFFIX: ${{ secrets.AZURE_SUFFIX }}
+      AZURE_UNIQUE_CODE: ${{ secrets.AZURE_UNIQUE_CODE }}  
+
+  build-receipt-service:
+    needs: [environment,registry]
+    name: Build Receipt Generation Service
+    uses: ./.github/workflows/build-service.yaml
+    with:
+      environment: ${{ needs.environment.outputs.name }}
+      project: RedDog.ReceiptGenerationService
+      context: ./src
+      repository: reddog
+      image: receipt-service
+      skipExisting: true
+    secrets: 
+      AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+      AZURE_SUFFIX: ${{ secrets.AZURE_SUFFIX }}
+      AZURE_UNIQUE_CODE: ${{ secrets.AZURE_UNIQUE_CODE }}  
+
+  build-ui:
+    needs: [environment,registry]
+    name: Build UI
+    uses: ./.github/workflows/build-service.yaml
+    with:
+      environment: ${{ needs.environment.outputs.name }}
+      project: RedDog.UI
+      context: ./src/RedDog.UI
+      repository: reddog
+      image: ui
+      skipExisting: true
+    secrets: 
+      AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+      AZURE_SUFFIX: ${{ secrets.AZURE_SUFFIX }}
+      AZURE_UNIQUE_CODE: ${{ secrets.AZURE_UNIQUE_CODE }}  
+
+  build-virtual-customer:
+    needs: [environment,registry]
+    name: Build Virtual Customer
+    uses: ./.github/workflows/build-service.yaml
+    with:
+      environment: ${{ needs.environment.outputs.name }}
+      project: RedDog.VirtualCustomer
+      context: ./src/RedDog.VirtualCustomer
+      repository: reddog
+      image: virtual-customer
+      skipExisting: true
+    secrets: 
+      AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+      AZURE_SUFFIX: ${{ secrets.AZURE_SUFFIX }}
+      AZURE_UNIQUE_CODE: ${{ secrets.AZURE_UNIQUE_CODE }}  
+
+  build-virtual-worker:
+    needs: [environment,registry]
+    name: Build Virtual Worker
+    uses: ./.github/workflows/build-service.yaml
+    with:
+      environment: ${{ needs.environment.outputs.name }}
+      project: RedDog.VirtualWorker
+      context: ./src
+      repository: reddog
+      image: virtual-worker
+      skipExisting: true
+    secrets: 
+      AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+      AZURE_SUFFIX: ${{ secrets.AZURE_SUFFIX }}
+      AZURE_UNIQUE_CODE: ${{ secrets.AZURE_UNIQUE_CODE }}  
+  
+  deploy:
+    needs: [environment, registry, apim, build-accounting,build-bootstrapper,build-corporate-transfer,build-loyalty-service,build-makeline-service,build-order-service,build-receipt-service,build-ui,build-virtual-customer,build-virtual-worker]
+    name: Deploy Bicep 
+    runs-on: ubuntu-latest
+    environment: 
+      name: ${{ needs.environment.outputs.name }}
+    
+    steps:
+      - uses: actions/checkout@v2   
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Deploy
+        run: |
+          az deployment sub create --name ${{ needs.environment.outputs.name }} \
+                                  --location ${{ secrets.AZURE_LOCATION }} \
+                                  --template-file ./infra/main.bicep \
+                                  --parameters name=${{ needs.environment.outputs.name }} \
+                                  --parameters location=${{ secrets.AZURE_LOCATION }} \
+                                  --parameters uniqueSuffix=${{ secrets.AZURE_SUFFIX }}-${{ secrets.AZURE_UNIQUE_CODE }}

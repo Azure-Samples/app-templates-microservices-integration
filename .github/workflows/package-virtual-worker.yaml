@@ -1,0 +1,47 @@
+name: package-virtual-worker
+
+on:
+  push:
+    branches:
+      - 'master'
+      - 'main'
+      - 'dev*'
+      - 'features/*'
+    paths:
+      - 'src/RedDog.VirtualWorker/**'
+
+  workflow_dispatch:
+
+jobs:
+  environment:
+    name: Determine Environment Name
+    uses: ./.github/workflows/environment-name.yaml     
+
+  validate:
+    needs: [environment]
+    name: Validate Environment Secrets
+    uses: ./.github/workflows/validate-secrets.yaml
+    with:
+      environment: ${{ needs.environment.outputs.name }}
+    secrets: 
+      AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+      AZURE_SUFFIX: ${{ secrets.AZURE_SUFFIX }}
+      AZURE_UNIQUE_CODE: ${{ secrets.AZURE_UNIQUE_CODE }}
+      AZURE_LOCATION: ${{ secrets.AZURE_LOCATION }}
+
+  build:
+    needs: [environment,validate]
+    name: Build Service
+    uses: ./.github/workflows/build-service.yaml
+    with:
+      environment: ${{ needs.environment.outputs.name }}
+      project: RedDog.VirtualWorker
+      context: ./src
+      repository: reddog
+      image: virtual-worker
+      skipExisting: false
+    secrets: 
+      AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+      AZURE_SUFFIX: ${{ secrets.AZURE_SUFFIX }}
+      AZURE_UNIQUE_CODE: ${{ secrets.AZURE_UNIQUE_CODE }}  
+

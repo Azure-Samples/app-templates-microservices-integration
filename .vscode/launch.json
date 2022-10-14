@@ -1,0 +1,193 @@
+{
+    // Use IntelliSense to find out which attributes exist for C# debugging
+    // Use hover for the description of the existing attributes
+    // For further information visit https://github.com/OmniSharp/omnisharp-vscode/blob/master/debugger-launchjson.md
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Debug UI",
+            "runtimeExecutable": "npm",
+            "cwd": "${workspaceFolder}/src/RedDog.UI",
+            "runtimeArgs": [
+                "run",
+                "serve"
+            ],
+            "env": {
+                "NODE_ENV": "Development"
+            },
+            "port": 8080,
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "postDebugTask": "Dapr Stop UI",
+        },
+        {
+            "name": "Debug OrderService",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "Build OrderService",
+            "postDebugTask": "Dapr Stop OrderService",
+            "program": "${workspaceFolder}/src/RedDog.OrderService/bin/Debug/net6.0/src/RedDog.OrderService.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/src/RedDog.OrderService",
+            "stopAtEntry": false,
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development",
+                "ASPNETCORE_URLS": "http://*:5100;https://*:5102",
+                "DAPR_HTTP_PORT": "5180",
+                "DAPR_GRPC_PORT": "5101"
+            }
+        },
+        {
+            "name": "Debug MakeLineService",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "Build MakeLineService",
+            "postDebugTask": "Dapr Stop MakeLineService",
+            "program": "${workspaceFolder}/src/RedDog.MakeLineService/bin/Debug/net6.0/src/RedDog.MakeLineService.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/src/RedDog.MakeLineService",
+            "stopAtEntry": false,
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development",
+                "ASPNETCORE_URLS": "http://*:5200",
+                "DAPR_HTTP_PORT": "5280",
+                "DAPR_GRPC_PORT": "5201"
+            }
+        },
+        {
+            "name": "Debug ReceiptGenerationService",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "Build ReceiptGenerationService",
+            "postDebugTask": "Dapr Stop ReceiptGenerationService",
+            "program": "${workspaceFolder}/src/RedDog.ReceiptGenerationService/bin/Debug/net6.0/src/RedDog.ReceiptGenerationService.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/src/RedDog.ReceiptGenerationService",
+            "stopAtEntry": false,
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development",
+                "ASPNETCORE_URLS": "http://*:5300",
+                "DAPR_HTTP_PORT": "5380",
+                "DAPR_GRPC_PORT": "5301"
+            }
+        },
+        {
+            "name": "Debug LoyaltyService",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "Build LoyaltyService",
+            "postDebugTask": "Dapr Stop LoyaltyService",
+            "program": "${workspaceFolder}/src/RedDog.LoyaltyService/bin/Debug/net6.0/src/RedDog.LoyaltyService.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/src/RedDog.LoyaltyService",
+            "stopAtEntry": false,
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development",
+                "ASPNETCORE_URLS": "http://*:5400",
+                "DAPR_HTTP_PORT": "5480",
+                "DAPR_GRPC_PORT": "5401"
+            }
+        },
+        {
+            "name": "Debug VirtualWorker",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "Build VirtualWorker",
+            "postDebugTask": "Dapr Stop VirtualWorker",
+            "program": "${workspaceFolder}/src/RedDog.VirtualWorker/bin/Debug/net6.0/src/RedDog.VirtualWorker.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/src/RedDog.VirtualWorker",
+            "stopAtEntry": false,
+            "env": {
+                "DOTNETCORE_ENVIRONMENT": "Development",
+                "ASPNETCORE_URLS": "http://*:5500",
+                "DAPR_HTTP_PORT": "5580",
+                "DAPR_GRPC_PORT": "5501",
+                "STORE_ID": "Redmond"
+            }
+        },
+        {
+            "name": "Debug VirtualCustomers",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "Build VirtualCustomers",
+            "postDebugTask": "Dapr Stop VirtualCustomers",
+            "program": "${workspaceFolder}/src/RedDog.VirtualCustomers/bin/Debug/net6.0/src/RedDog.VirtualCustomers.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/src/RedDog.VirtualCustomers",
+            "stopAtEntry": false,
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development",
+                "DAPR_HTTP_PORT": "5680",
+                "DAPR_GRPC_PORT": "5601",
+                "STORE_ID": "Redmond"
+            }
+        },
+        {
+            "name": "Debug AccountingService",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "Build AccountingService",
+            "postDebugTask": "Dapr Stop AccountingService",
+            "program": "${workspaceFolder}/src/RedDog.AccountingService/bin/Debug/net6.0/src/RedDog.AccountingService.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/src/RedDog.AccountingService",
+            "stopAtEntry": false,
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development",
+                "ASPNETCORE_URLS": "http://*:5700",
+                "DAPR_HTTP_PORT": "5780",
+                "DAPR_GRPC_PORT": "5701"
+            }
+        },
+        {
+            "name": "Debug AccountingService (Corp)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "Build AccountingService",
+            "postDebugTask": "Dapr Stop AccountingService",
+            "program": "${workspaceFolder}/src/RedDog.AccountingService/bin/Debug/net6.0/src/RedDog.AccountingService.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/src/RedDog.AccountingService",
+            "stopAtEntry": false,
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development",
+                "ASPNETCORE_URLS": "http://*:6700",
+                "DAPR_HTTP_PORT": "6780",
+                "DAPR_GRPC_PORT": "6701"
+            }
+        },
+        {
+            "name": "Debug Bootstrapper",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "Build Bootstrapper",
+            "program": "${workspaceFolder}/src/RedDog.Bootstrapper/bin/Debug/net6.0/src/RedDog.Bootstrapper.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/src/RedDog.Bootstrapper",
+            "stopAtEntry": false,
+            "env": {
+                "DAPR_HTTP_PORT": "5880",
+                "DAPR_GRPC_PORT": "5801"
+            }
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Debug All Services",
+            "configurations": [
+                "Debug OrderService",
+                "Debug MakeLineService",
+                "Debug ReceiptGenerationService",
+                "Debug LoyaltyService",
+                "Debug AccountingService",
+                "Debug VirtualWorker",
+                "Debug VirtualCustomers",
+                "Debug UI"
+            ]
+        },
+    ]
+}

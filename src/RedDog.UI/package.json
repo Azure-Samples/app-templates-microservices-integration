@@ -1,0 +1,67 @@
+{
+  "name": "reddog.ui",
+  "version": "0.16.80",
+  "private": true,
+  "description": "RedDog Dashboard UI",
+  "author": "Joey Schluchter",
+  "scripts": {
+    "serve": "vue-cli-service serve --open",
+    "build": "vue-cli-service build",
+    "container": "vue-cli-service serve",
+    "dev": "vue-cli-service --host 127.0.0.1 --open serve",
+    "lint": "vue-cli-service lint"
+  },
+  "dependencies": {
+    "@vue/cli-plugin-babel": "^4.4.6",
+    "@vue/cli-plugin-eslint": "^4.4.6",
+    "@vue/cli-plugin-pwa": "^4.4.6",
+    "@vue/cli-service": "^4.5.12",
+    "async": "^2.6.3",
+    "cache-loader": "^4.1.0",
+    "chart.js": "2.8",
+    "chartjs-plugin-streaming": "1.8",
+    "currency.js": "^2.0.3",
+    "dotenv-webpack": "^7.0.2",
+    "moment": "^2.29.1",
+    "node-fetch": "^2.6.1",
+    "node-sass": "^6.0.1",
+    "register-service-worker": "^1.7.1",
+    "vue": "^2.6.11",
+    "vue-chartjs": "^3.5.1",
+    "vue-i18n": "^8.18.2",
+    "vue-router": "^3.3.4",
+    "vue-router-prefetch": "^1.6.0",
+    "vue-template-compiler": "^2.6.11",
+    "vue2-transitions": "^0.3.0"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "^4.4.6",
+    "@vue/cli-plugin-eslint": "^4.4.6",
+    "@vue/cli-plugin-pwa": "^4.4.6",
+    "@vue/cli-service": "^4.5.12",
+    "eslint": "^6.8.0",
+    "eslint-plugin-vue": "^7.5.0",
+    "sass-loader": "^10.2.0",
+    "vue-cli-plugin-i18n": "^1.0.1",
+    "vue-template-compiler": "^2.6.11"
+  },
+  "eslintConfig": {
+    "rules": {},
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "plugin:vue/essential",
+      "eslint:recommended"
+    ],
+    "parserOptions": {
+      "parser": "babel-eslint"
+    }
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not ie <= 11"
+  ]
+}

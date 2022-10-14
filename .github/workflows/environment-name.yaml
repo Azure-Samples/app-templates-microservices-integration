@@ -1,0 +1,26 @@
+on:
+  workflow_call:
+    outputs:
+      name: 
+        value: ${{ jobs.environment.outputs.name }}
+
+jobs:
+
+  environment:
+    name: Determine Environment Name
+    runs-on: ubuntu-latest
+    outputs:
+      name: ${{ steps.main.outputs.name }}
+
+    steps:
+      - name: Set Environment Name
+        id: main
+        run: |
+          echo "Running on branch ${{ github.ref }}"
+          if [ "${{ github.ref }}" = "refs/heads/main" ] || [ "${{ github.ref }}" = "refs/heads/master" ]; then
+            echo "::set-output name=name::Production"
+          elif [ "${{ github.ref }}" = "refs/heads/dev" ] || [ "${{ github.ref }}" = "refs/heads/develop" ]; then
+            echo "::set-output name=name::Test"
+          else
+             echo "::set-output name=name::Features"
+          fi         
