@@ -1,6 +1,7 @@
 # Red Dog Demo: Azure Container Apps, Azure App Service, Azure Functions, and Azure API Management
 
 This repository leverages the [Reddog codebase](https://github.com/Azure/reddog-code) and the [Reddog Container Apps](https://github.com/Azure/reddog-containerapps) bicep modules. It was created to help users deploy a comprehensive, microservice-based sample application to [Azure Container Apps](https://azure.microsoft.com/services/container-apps/), [Azure App Service](https://azure.microsoft.com/products/app-service/), [Azure Functions](https://azure.microsoft.com/products/functions/), and [Azure API Management](https://azure.microsoft.com/products/api-management/).
+> Refer to the [App Templates](https://github.com/microsoft/App-Templates) repo Readme for more samples that are compatible with [Azure Developer CLI (azd)](https://github.com/Azure/azure-dev/)
 
 ## Features
 
@@ -135,6 +136,7 @@ GitHub workflows are included for deploying the solution to Azure.
 
 To run the workflows, follow these steps:
 
+1. Fork the repo
 1. Create three environments
     - `Production`: Commits to the `master` or `main` branch will trigger deployments to this environment.
     - `Test`: Commits to the `dev` or `develop` branch will trigger deployments to this environment.
