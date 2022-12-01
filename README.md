@@ -144,7 +144,7 @@ To run the workflows, follow these steps:
 1. Create the following secrets
     - `AZURE_CREDENTIALS`: This secret will be used by GitHub actions to authenticate with Azure. Follow the instructions [here](github.com/marketplace/actions/azure-login#configure-a-service-principal-with-a-secret) to login using Azure Service Principal with a secret.
     - `AZURE_LOCATION`: This is the Azure region where resources will be deployed
-    - `AZURE_PREFIX`: This is the name that will be appended to Azure resources
+    - `AZURE_SUFFIX`: This is the name that will be appended to Azure resources
     - `AZURE_UNIQUE_CODE`: This is a unique code that will be appended to Azure resources
 1. Go to [Actions](../actions/)
 1. Click on the `Deploy Solution` action
