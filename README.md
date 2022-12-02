@@ -175,7 +175,7 @@ When the deployment completes.
 1. The Virtual Customer is simulating customer orders periodically. To submit an order you can use the following curl command in a bash shell to send a request to API Management.
 
     ```bash
-    curl -X POST https://<Your APIM Gateway URL>/order/ -H 'Content-Type: application/json' -d '{"storeId": "Redmond", "firstName": "John Hannibal", "lastName": "Smith", "loyaltyId": "42", "orderItems": [{"productId": 1, "quantity": 1}, { "productId": 2, "quantity": 1}, {"productId": 3, "quantity": 3}]}'
+    curl -X POST https://<Your APIM Gateway URL>/order/order -H 'Content-Type: application/json' -d '{"storeId": "Redmond", "firstName": "John Hannibal", "lastName": "Smith", "loyaltyId": "42", "orderItems": [{"productId": 1, "quantity": 1}, { "productId": 2, "quantity": 1}, {"productId": 3, "quantity": 3}]}'
 
     ```
 
