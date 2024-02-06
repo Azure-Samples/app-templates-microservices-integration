@@ -18,9 +18,9 @@ jobs:
         run: |
           echo "Running on branch ${{ github.ref }}"
           if [ "${{ github.ref }}" = "refs/heads/main" ] || [ "${{ github.ref }}" = "refs/heads/master" ]; then
-            echo "::set-output name=name::Production"
+            echo "name=Production" >> "$GITHUB_OUTPUT"
           elif [ "${{ github.ref }}" = "refs/heads/dev" ] || [ "${{ github.ref }}" = "refs/heads/develop" ]; then
-            echo "::set-output name=name::Test"
+            echo "name=Test" >> "$GITHUB_OUTPUT"
           else
-             echo "::set-output name=name::Features"
+             echo "name=Features" >> "$GITHUB_OUTPUT"
           fi         
